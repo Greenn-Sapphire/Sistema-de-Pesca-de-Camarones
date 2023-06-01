@@ -7,13 +7,13 @@ import configparser
 import os
 from PIL import Image
 from Archivos import *
+from functions import *
 
 class App(ctk.CTk):
 	def __init__(self):
 		super().__init__()	
 		estilo = Estilo()
-		settings = configparser.ConfigParser()
-		settings.read('config.ini')
+		settings = readConfig()
 
 		image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_images")
 		self.home_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "home_dark.png")),
@@ -31,13 +31,6 @@ class App(ctk.CTk):
 		self.grid_columnconfigure(1, weight=1)
 		self.grid_rowconfigure(0, weight=1)
 
-		self.home_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "home_dark.png")),
-													dark_image=Image.open(os.path.join(image_path, "home_light.png")), size=(20, 20))
-		self.chat_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "chat_dark.png")),
-													dark_image=Image.open(os.path.join(image_path, "chat_light.png")), size=(20, 20))
-		self.add_user_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, "add_user_dark.png")),
-														dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
-
 		#Barra de navegación
 		self.navigation_frame = ctk.CTkFrame(self, corner_radius=0)
 		self.navigation_frame.grid(row=0, column=0, sticky="ns")
@@ -54,11 +47,11 @@ class App(ctk.CTk):
 		self.frame_3_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.add_user_image, text="Guardar visualizaciones" if settings['SETTINGS']['language'] == "Spanish" else "Save visualizations", fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"), anchor="w", command=self.frame_3_button_event)
 		self.frame_3_button.grid(row=3, column=0, sticky="new")
 
-		self.appearance_mode_menu = ctk.CTkOptionMenu(self.navigation_frame, values=[ "System", "Light", "Dark"], command=self.change_appearance_mode_event)
+		self.appearance_mode_menu = ctk.CTkOptionMenu(self.navigation_frame, values=["System", "Light", "Dark"], command=self.change_appearance_mode_event)
 		self.appearance_mode_menu.set(settings['SETTINGS']['theme'])
 		self.appearance_mode_menu.grid(row=4, column=0, padx=20, pady=20, sticky="s")
 
-		self.language_menu = ctk.CTkOptionMenu(self.navigation_frame, values=[ "Spanish", "English"], command=self.change_language_event)
+		self.language_menu = ctk.CTkOptionMenu(self.navigation_frame, values=["Spanish", "English"], command=self.change_language_event)
 		self.language_menu.set(settings['SETTINGS']['language'])
 		self.language_menu.grid(row=5, column=0, padx=20, pady=20, sticky="s")
 
@@ -74,60 +67,23 @@ class App(ctk.CTk):
 
 		self.saveFrame = save(self.interactFrame)
 
-		self.select_frame_by_name("upload")
+		select_frame_by_name(self, 'upload')
 
 	def change_appearance_mode_event(self, new_appearance_mode):
-		settings = configparser.ConfigParser()
-		settings.read('config.ini')
-		if(new_appearance_mode == 'System'):
-			settings['SETTINGS']['theme'] = 'System'
-		elif(new_appearance_mode == 'Light'):
-			settings['SETTINGS']['theme'] = 'Light'
-		elif(new_appearance_mode == 'Dark'):
-			settings['SETTINGS']['theme'] = 'Dark'
+		changeConfig('theme', new_appearance_mode)
 		ctk.set_appearance_mode(new_appearance_mode)
 
-		with open('config.ini', 'w') as configfile:
-			settings.write(configfile)
-
 	def change_language_event(self, new_language):
-		settings = configparser.ConfigParser()
-		settings.read('config.ini')
-		if(new_language == 'Spanish'):
-			settings['SETTINGS']['language'] = 'Spanish'
-		else:
-			settings['SETTINGS']['language'] = 'English'
-
-		with open('config.ini', 'w') as configfile:
-			settings.write(configfile)
-
-	def select_frame_by_name(self, name):
-		self.home_button.configure(fg_color=("gray75", "gray25") if name == "upload" else "transparent")
-		self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "visual" else "transparent")
-		self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "save" else "transparent")
-
-		# show selected frame
-		if name == "upload":
-			self.uploadFrame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
-		else:
-			self.uploadFrame.grid_forget()
-		if name == "visual":
-			self.visualFrame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
-		else:
-			self.visualFrame.grid_forget()
-		if name == "save":
-			self.saveFrame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
-		else:
-			self.saveFrame.grid_forget()
+		changeConfig('language', new_language)
 
 	def home_button_event(self):
-		self.select_frame_by_name("upload")
+		select_frame_by_name(self, 'upload')
 
 	def frame_2_button_event(self):
-		self.select_frame_by_name("visual")
+		select_frame_by_name(self, 'visual')
 
 	def frame_3_button_event(self):
-		self.select_frame_by_name("save")
+		select_frame_by_name(self, 'save')
 
 if __name__ == "__main__":
     app = App()
