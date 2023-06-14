@@ -20,7 +20,7 @@ class visual(ctk.CTkFrame):
 		self.grid(sticky= 'nswe')
 
 		self.infoFrame = ScrollableInfoFrame(self)
-		self.infoFrame.configure(corner_radius = 5, scrollbar_button_hover_color = self._fg_color, scrollbar_button_color = self._fg_color)
+		#self.infoFrame.configure(corner_radius = 5, scrollbar_button_hover_color = self._fg_color, scrollbar_button_color = self._fg_color)
 		self.infoFrame.grid(row = 0, column = 0, rowspan = 2, sticky = 'nwse', padx = 8, pady = 8)
 		self.infoFrame.grid_columnconfigure(0, weight = 1)
 		self.infoFrame.grid_rowconfigure(8, weight = 1)
