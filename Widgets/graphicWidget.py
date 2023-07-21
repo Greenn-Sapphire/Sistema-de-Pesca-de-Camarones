@@ -5,7 +5,7 @@ import customtkinter as ctk
 import matplotlib
 matplotlib.use('TkAgg')
 
-from functions import Data
+from dataframe import Data
 
 class GraphicFrame(ctk.CTkFrame):
     def __init__(self, master, df, xaxis, yaxis, graphictype):

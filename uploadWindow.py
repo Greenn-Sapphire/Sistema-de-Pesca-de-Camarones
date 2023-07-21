@@ -1,47 +1,44 @@
 import customtkinter as ctk
 
-from Widgets.scrollableinfoframeWidget import ScrollableInfoFrame
 from Widgets.scrollablecheckboxWidget import ScrollableCheckBoxFrame
-from functions import Data, readDataframe
+from functions import readDataframe, select_frame_by_name
 from Widgets.style import Estilo
-from Archivos import *
+from dataframe import Data
 
 class upload(ctk.CTkFrame):
 	def __init__(self, master):
 		super().__init__(master)
 		estilo = Estilo()
-		#self.grid_rowconfigure(1, weight = 1)
-		self.grid_columnconfigure(1, weight = 1)
-		self.grid(sticky = 'nswe')
+		self.grid(sticky= 'nswe')
+		self.grid_columnconfigure(1, weight = 1) #Darle todo el espacio restante a la Tabla
+		self.grid_rowconfigure(0, weight = 1) #Darle todo el espacio restante al ScrollableFrame
 
-		self.uploadbutton = ctk.CTkButton(self, text = 'Cargar archivo', command = self.button_callbck)
-		self.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 10, pady = 2)
-		self.connectbutton = ctk.CTkButton(self, text = 'Conectar a una base de datos', command = self.button_callbck)
-		self.connectbutton.grid(row = 2, column = 0, sticky = 'sew', padx = 10, pady = 2)
-		self.filterbutton = ctk.CTkButton(self, text = 'Filtrar registros', command = self.filter_button_callbck)
-		self.filterbutton.grid(row = 3, column = 0, sticky = 'sew', padx = 10, pady = (2, 8))
-		#self.filterbutton = ctk.CTkButton(self, text='Conectar a una base de datos', command=self.button_callbck)
-		#self.filterbutton.grid(row = 0, column = 1, sticky= 'e')
-
-		self.infoFrame = ScrollableInfoFrame(self)
-		#self.infoFrame.configure(corner_radius = 5, scrollbar_button_hover_color = self._fg_color, scrollbar_button_color = self._fg_color)
-		self.infoFrame.grid(row = 0, column = 0, sticky = 'nsew', padx = 8, pady = 8)
-		self.grid_rowconfigure(0, weight=1)
+		self.infoFrame = ctk.CTkScrollableFrame(self)
+		self.infoFrame.configure(corner_radius = 5, scrollbar_button_hover_color = ('gray86', 'gray17'), scrollbar_button_color = ('gray81', 'gray20'))
+		self.infoFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
+		self.infoFrame.grid_rowconfigure(8, weight = 1)
+		self.infoFrame.grid_columnconfigure(0, weight = 1)
 	
-		self.infoFrameLabel = ctk.CTkLabel(self.infoFrame, text = 'Información', compound = 'left', font = ctk.CTkFont(size = 15, weight = 'bold'))
-		self.infoFrameLabel.grid(row = 0, column = 0, sticky = 'new', padx = 20, pady = 20)
+		self.infoLabel = ctk.CTkLabel(self.infoFrame, text = 'Información', font = ctk.CTkFont(size = 15, weight = 'bold'))
+		self.infoLabel.grid(row = 0, column = 0, padx = 20, pady = 20)
 		
-		self.frameInfo = ctk.CTkLabel(self.infoFrame, text = 'Número de columnas', corner_radius = 5, font = ctk.CTkFont(size = 12, weight = 'bold'))
-		self.frameInfo.grid(row=1, column = 0, sticky = 'new',  padx = 2, pady = 2)
-		self.frameInfo = ctk.CTkLabel(self.infoFrame, text = 'Número de registros', corner_radius = 5, font = ctk.CTkFont(size = 12, weight = 'bold'))
-		self.frameInfo.grid(row=3, column = 0, sticky = 'new',  padx = 2, pady = 2)
-		self.frameInfo = ctk.CTkLabel(self.infoFrame, text = 'Registros repetidos', corner_radius = 5, font = ctk.CTkFont(size = 12, weight = 'bold'))
-		self.frameInfo.grid(row=5, column = 0, sticky = 'new',  padx = 2, pady = 2)
-		self.frameInfo = ctk.CTkLabel(self.infoFrame, text = 'Registros vacios', corner_radius = 5, font = ctk.CTkFont(size = 12, weight = 'bold'))
-		self.frameInfo.grid(row=7, column = 0, sticky = 'new',  padx = 2, pady = 2)
+		self.Label_ColNum = ctk.CTkLabel(self.infoFrame, text = 'Número de columnas', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Label_Regis = ctk.CTkLabel(self.infoFrame, text = 'Número de registros', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Label_Repeat = ctk.CTkLabel(self.infoFrame, text = 'Registros repetidos', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Label_Empty = ctk.CTkLabel(self.infoFrame, text = 'Registros vacios', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Label_ColNum.grid(row = 1, column = 0, sticky = 'ew', pady = (2, 0))
+		self.Label_Regis.grid(row = 3, column = 0, sticky = 'ew', pady = (2, 0))
+		self.Label_Repeat.grid(row = 5, column = 0, sticky = 'ew', pady = (2, 0))
+		self.Label_Empty.grid(row = 7, column = 0, sticky = 'ew', pady = (2, 0))
+		
+		self.uploadbutton = ctk.CTkButton(self, text = 'Cargar archivo', command = self.button_callbck)
+		self.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
 
 	def button_callbck(self):
-		readDataframe(self)
+		readDataframe(self, self.master)
+		self.master.master.upload_button.configure(command=self.master.master.upload_button_event)
+		self.master.master.preprocess_button.configure(state = 'normal')
+
 	
 	def filter_button_callbck(self):
 		self.filterWindow = ToplevelWindow(self)
@@ -50,5 +47,5 @@ class ToplevelWindow(ctk.CTkToplevel):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.geometry("400x300")
-		self.scrollable_checkbox_frame = ScrollableCheckBoxFrame(master=self, width=200, item_list = Data.dataframe.columns.to_numpy().tolist())
+		self.scrollable_checkbox_frame = ScrollableCheckBoxFrame(master=self, width=200, item_list = Data.dataframe['ESPECIE'].unique().tolist())
 		self.scrollable_checkbox_frame.grid(row=0, column=0, padx=15, pady=15, sticky="ns")

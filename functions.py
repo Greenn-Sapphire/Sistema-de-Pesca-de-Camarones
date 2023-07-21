@@ -5,18 +5,19 @@ import configparser
 import os
 
 from Widgets.tableWidget import Table
+from preprocessWindow import preprocess
+
+from dataframe import Data as data
 
 #Clase que usara como un tipo diccionario donde estara el dataframe
 #from functions import Data | Como importar la Clase
 #df = Data.dataframe | Como hacer uso del dataframe de la clase
-class Data():
-    pass
-data = Data
+
 
 #Funcion que leera un archivos .csv o .xlsx y lo convertira en un dataframe de pandas
-def readDataframe(self):
+def readDataframe(self, master):
     try:
-        file = askopenfilename(initialdir = 'C://', filetypes = [('CSV', '*.csv'), ('Excel', '*.xlsx')])
+        file = askopenfilename(initialdir = 'C://', filetypes = [('Excel', '*.xlsx'), ('CSV', '*.csv')])
         path, extension = os.path.splitext(file)
         match extension:
             case '.csv':
@@ -27,8 +28,12 @@ def readDataframe(self):
         CTkMessagebox(title = 'Error', message = 'No se ha seleccionado ningún archivo', icon = 'cancel')
         return
     
-    Table(self, data.dataframe)
+    Table(self, data.dataframe, 'upload')
 
+    master.master.preprocessFrame = preprocess(master)
+    master.master.preprocessFrame.grid_forget()
+    master.master.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+    
 #Funcion que leera el archivo config.ini
 def readConfig():
     settings = configparser.ConfigParser()
@@ -45,20 +50,34 @@ def changeConfig(setting, value):
 
 #Funcion para cambiar entre frames principales
 def select_frame_by_name(self, name):
-    self.home_button.configure(fg_color = ('gray75', 'gray25') if name == 'upload' else 'transparent')
-    self.frame_2_button.configure(fg_color = ('gray75', 'gray25') if name == 'visual' else 'transparent')
-    self.frame_3_button.configure(fg_color = ('gray75', 'gray25') if name == 'save' else 'transparent')
+    try:
+        self.upload_button.configure(fg_color = ('gray75', 'gray25') if name == 'upload' else 'transparent')
+        self.preprocess_button.configure(fg_color = ('gray75', 'gray25') if name == 'visual' else 'transparent')
 
-    # show selected frame
-    if name == 'upload':
-        self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-    else:
-        self.uploadFrame.grid_forget()
-    if name == 'visual':
-        self.visualFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-    else:
-        self.visualFrame.grid_forget()
-    if name == 'save':
-        self.saveFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-    else:
-        self.saveFrame.grid_forget()
+        self.captures_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'captures' else 'transparent')
+        self.species_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'species' else 'transparent')
+        self.maps_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'maps' else 'transparent')
+
+        # show selected frame
+        if name == 'upload':
+            self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+        else:
+            self.uploadFrame.grid_forget()
+        if name == 'preprocess':
+            self.preprocessFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+        else:
+            self.preprocessFrame.grid_forget()
+        if name == 'captures':
+            self.capturesFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+        else:
+            self.capturesFrame.grid_forget()
+        if name == 'species':
+            self.speciesFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+        else:
+            self.speciesFrame.grid_forget()
+        if name == 'maps':
+            self.mapsFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+        else:
+            self.mapsFrame.grid_forget()
+    except:
+        pass
