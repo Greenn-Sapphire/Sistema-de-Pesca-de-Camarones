@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import seaborn as sns
 
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from Widgets.style import Estilo
 import matplotlib.pyplot as plt
 from dataframe import Data
@@ -66,3 +66,7 @@ class species(ctk.CTkFrame):
 		canvas.draw()
 		canvas.get_tk_widget().configure(bg = 'lightgray', highlightthickness = 0)
 		canvas.get_tk_widget().pack()
+
+		toolbar = NavigationToolbar2Tk(canvas, self.Dashboard_Frame)
+		toolbar.update()
+		toolbar.pack()

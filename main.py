@@ -41,7 +41,8 @@ class App(ctk.CTk):
 		#Lo mismo aquí se define la cantidad de espacio que ocupara la fila 0
 		self.navigation_frame.grid_columnconfigure(0, weight=1)
 
-		self.navigation_frame_label = ctk.CTkLabel(self.navigation_frame, text='Menú', compound='left', font=ctk.CTkFont(size=15, weight='bold'))
+		#ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.home_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
+		self.navigation_frame_label = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.home_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
 		self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
 
 		self.upload_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.home_image, text='Cargar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Load data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w')
@@ -76,6 +77,43 @@ class App(ctk.CTk):
 		#Llamada a la ventana upload
 		self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
 		#select_frame_by_name(self, 'upload')
+
+	def show_menu(self):
+		widgets = [(self.navigation_frame_label, {'text': 'Menú', 'command': self.hide_menu}),
+			(self.upload_button, {'text': 'Cargar datos'}), (self.preprocess_button, {'text': 'Preprocesar datos'}),
+			(self.captures_menu_button, {'text': 'Lances'}), (self.species_menu_button, {'text': 'Especies'}), 
+			(self.maps_menu_button, {'text': 'Mapas'})]
+		
+		for widget, config in widgets:
+			widget.configure(**config)
+			widget.grid(sticky = 'we')
+
+			if widget is self.navigation_frame_label:
+				widget.grid(sticky = 'we', padx = 20)
+
+			if widget is self.maps_menu_button:
+				widget.grid(sticky = 'nwe')
+
+		self.appearance_mode_menu.grid()
+		self.language_menu.grid()
+
+	def hide_menu(self):
+		widgets_to_hide = [self.navigation_frame_label, self.upload_button, self.preprocess_button, 
+		    self.captures_menu_button, self.species_menu_button, self.maps_menu_button]
+
+		for widget in widgets_to_hide:
+			widget.configure(text = '', width = 5)
+			widget.grid(sticky = 'w')
+
+			if widget is self.navigation_frame_label:
+				widget.configure(text = '', command = self.show_menu, width = 5)
+				widget.grid(sticky = 'w', padx = 0)
+
+			if widget is self.maps_menu_button:
+				widget.grid(sticky = 'nw')
+		
+		self.appearance_mode_menu.grid_remove()
+		self.language_menu.grid_remove()
 
 	#Cuando se usa el atributo commad desde un objeto CTkOptionMenu este siempre arrojara dos valores que son:
 	#'self' - Que hace referencia al propio elemento del que viene la interracion
