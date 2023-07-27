@@ -23,5 +23,21 @@ class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
                 self.checkbox_list.remove(checkbox)
                 return
 
+    def update_items(self, new_item_list):
+        # Primero, eliminamos todos los checkboxes existentes
+        for checkbox in self.checkbox_list:
+            checkbox.destroy()
+
+        # Luego, creamos los nuevos checkboxes basados en la lista de elementos proporcionada
+        self.checkbox_list = []
+        for item in new_item_list:
+            self.add_item(item)
+
     def get_checked_items(self):
         return [checkbox.cget('text') for checkbox in self.checkbox_list if checkbox.get() == 1]
+
+    def set_checked(self, item):
+        # Marca el checkbox correspondiente al elemento proporcionado como seleccionado
+        for checkbox in self.checkbox_list:
+            if checkbox.cget('text') == item:
+                checkbox.select()

@@ -1,26 +1,24 @@
 import customtkinter as ctk
-import os
 import pandas as pd
+import os
 
 from tkinter.filedialog import askopenfilename
 from CTkMessagebox import CTkMessagebox
-from CTkTable import *
 from CTkXYFrame import *
-from Widgets.scrollablecheckboxWidget import ScrollableCheckBoxFrame
-from Widgets.style import Estilo
-from dataframe import Data
+from CTkTable import *
+
 from preprocessWindow import preprocess
+from dataframe import Data
 
 class upload(ctk.CTkFrame):
 	def __init__(self, master):
 		super().__init__(master)
-		estilo = Estilo()
 		self.grid(sticky= 'nswe')
 		self.grid_columnconfigure(1, weight = 1) #Darle todo el espacio restante a la Tabla
 		self.grid_rowconfigure(0, weight = 1) #Darle todo el espacio restante al ScrollableFrame
 
 		self.infoFrame = ctk.CTkScrollableFrame(self)
-		self.infoFrame.configure(corner_radius = 5, scrollbar_button_hover_color = ('gray86', 'gray17'), scrollbar_button_color = ('gray81', 'gray20'))
+		self.infoFrame.configure(corner_radius = 5)
 		self.infoFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
 		self.infoFrame.grid_rowconfigure(8, weight = 1)
 		self.infoFrame.grid_columnconfigure(0, weight = 1)
@@ -146,10 +144,3 @@ class upload(ctk.CTkFrame):
 		df['EDO_MAD'] = df['EDO_MAD'].astype(int)
 		df['WA'] = df['WA'].astype(float)
 		df['OBSERV'] = df['OBSERV'].astype(str)
-
-class ToplevelWindow(ctk.CTkToplevel):
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.geometry("400x300")
-		self.scrollable_checkbox_frame = ScrollableCheckBoxFrame(master=self, width=200, item_list = Data.dataframe['ESPECIE'].unique().tolist())
-		self.scrollable_checkbox_frame.grid(row=0, column=0, padx=15, pady=15, sticky="ns")

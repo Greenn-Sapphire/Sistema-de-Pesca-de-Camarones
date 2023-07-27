@@ -1,25 +1,32 @@
 import customtkinter as ctk
-from PIL import Image
+import configparser
 import os
 
-from Widgets.style import Estilo
-from uploadWindow import upload
-from functions import *
-from Archivos import *
+from PIL import Image
 
+from uploadWindow import upload
+from Archivos import *
+#<a href="https://www.flaticon.com/free-icons/align" title="align icons">Align icons created by Freepik - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/seo-full" title="seo full icons">Seo full icons created by Freepik - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/up-arrow" title="up arrow icons">Up arrow icons created by Freepik - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/spot" title="spot icons">Spot icons created by Freepik - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/write" title="write icons">Write icons created by Freepik - Flaticon</a>
 class App(ctk.CTk):
 	def __init__(self):
 		super().__init__()
-		estilo = Estilo()
-		settings = readConfig()
+		settings = self.readConfig()
 
 		image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Archivos')
-		self.home_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_cells.png')),
-													dark_image=Image.open(os.path.join(image_path, 'light_cells.png')), size=(20, 20))
-		self.chat_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_barchart.png')),
-													dark_image=Image.open(os.path.join(image_path, 'light_barchart.png')), size=(20, 20))
-		self.add_user_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_location.png')),
-														dark_image=Image.open(os.path.join(image_path, 'light_location.png')), size=(20, 20))
+		self.menu_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_menu.png')),
+													dark_image=Image.open(os.path.join(image_path, 'light_menu.png')), size=(20, 20))
+		self.upload_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_upload.png')),
+													dark_image=Image.open(os.path.join(image_path, 'light_upload.png')), size=(20, 20))
+		self.edit_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_edit.png')),
+													dark_image=Image.open(os.path.join(image_path, 'light_edit.png')), size=(20, 20))
+		self.graph_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_graph.png')),
+													dark_image=Image.open(os.path.join(image_path, 'light_graph.png')), size=(20, 20))
+		self.map_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_map.png')),
+														dark_image=Image.open(os.path.join(image_path, 'light_map.png')), size=(20, 20))
 
 		ctk.set_appearance_mode(settings['SETTINGS']['theme'])
 		self.title('Sistema de Pesca de Camarones')
@@ -42,19 +49,19 @@ class App(ctk.CTk):
 		self.navigation_frame.grid_columnconfigure(0, weight=1)
 
 		#ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.home_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
-		self.navigation_frame_label = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.home_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
+		self.navigation_frame_label = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.menu_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
 		self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
 
-		self.upload_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.home_image, text='Cargar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Load data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w')
+		self.upload_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.upload_image, text='Cargar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Load data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w')
 		self.upload_button.grid(row=1, column=0, sticky='new')
-		self.preprocess_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.chat_image, text='Prepocesar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Visualize data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.preprocess_button_event)
+		self.preprocess_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.edit_image, text='Prepocesar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Visualize data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.preprocess_button_event)
 		self.preprocess_button.grid(row=2, column=0, sticky='new')
 
-		self.captures_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.add_user_image, text='Lances' if settings['SETTINGS']['language'] == 'Spanish' else 'Captures', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.captures_button_event)
+		self.captures_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Lances' if settings['SETTINGS']['language'] == 'Spanish' else 'Captures', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.captures_button_event)
 		self.captures_menu_button.grid(row=3, column=0, sticky='new')
-		self.species_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.add_user_image, text='Especies' if settings['SETTINGS']['language'] == 'Spanish' else 'Species', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.species_button_event)
+		self.species_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Especies' if settings['SETTINGS']['language'] == 'Spanish' else 'Species', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.species_button_event)
 		self.species_menu_button.grid(row=4, column=0, sticky='new')
-		self.maps_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.add_user_image, text='Mapas' if settings['SETTINGS']['language'] == 'Spanish' else 'Maps', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.maps_button_event)
+		self.maps_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.map_image, text='Mapas' if settings['SETTINGS']['language'] == 'Spanish' else 'Maps', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.maps_button_event)
 		self.maps_menu_button.grid(row=5, column=0, sticky='new')
 
 		self.appearance_mode_menu = ctk.CTkOptionMenu(self.navigation_frame, values=['System', 'Light', 'Dark'], command=self.change_appearance_mode_event)
@@ -75,8 +82,7 @@ class App(ctk.CTk):
 		self.uploadFrame = upload(self.interactFrame)
 
 		#Llamada a la ventana upload
-		self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-		#select_frame_by_name(self, 'upload')
+		self.select_frame_by_name('upload')
 
 	def show_menu(self):
 		widgets = [(self.navigation_frame_label, {'text': 'Menú', 'command': self.hide_menu}),
@@ -119,30 +125,78 @@ class App(ctk.CTk):
 	#'self' - Que hace referencia al propio elemento del que viene la interracion
 	#'value' o en este caso 'new_appearance_mode' que es uno de los posibles valores que definimos en el objeto
 	def change_appearance_mode_event(self, new_appearance_mode):
-		changeConfig('theme', new_appearance_mode)
+		self.changeConfig('theme', new_appearance_mode)
 		ctk.set_appearance_mode(new_appearance_mode)
 
 	def change_language_event(self, new_language):
-		changeConfig('language', new_language)
+		self.changeConfig('language', new_language)
 
 	#Cuando se usa el atributo commad desde un objeto CTkButton solo arrojara un valor que será 'self'
 	#Aunque si se quieren pasar mas valores a esta función nos dará un error por lo que es mejor solo recibir los valores que envia el objeto
 	def upload_button_event(self):
 		#Desde dentro de la función podremos hacer uso de cualquier variable
-		select_frame_by_name(self, 'upload')
+		self.select_frame_by_name('upload')
 
 	def preprocess_button_event(self):
-		select_frame_by_name(self, 'preprocess')
+		self.select_frame_by_name('preprocess')
 
 	def captures_button_event(self):
-		select_frame_by_name(self, 'captures')
+		self.select_frame_by_name('captures')
 
 	def species_button_event(self):
-		select_frame_by_name(self, 'species')
+		self.select_frame_by_name('species')
 
 	def maps_button_event(self):
-		select_frame_by_name(self, 'maps')
+		self.select_frame_by_name('maps')
 
+	#Funcion que leera el archivo config.ini
+	def readConfig(self):
+		settings = configparser.ConfigParser()
+		settings.read('config.ini')
+		return settings
+
+	#Funcion para escribir sobre el archivo config.ini
+	def changeConfig(self, setting, value):
+		settings = self.readConfig()
+		settings['SETTINGS'][setting] = value
+		
+		with open('config.ini', 'w') as configfile:
+			settings.write(configfile)
+
+	#Funcion para cambiar entre frames principales
+	def select_frame_by_name(self, name):
+		try:
+			self.upload_button.configure(fg_color = ('gray75', 'gray25') if name == 'upload' else 'transparent')
+			self.preprocess_button.configure(fg_color = ('gray75', 'gray25') if name == 'visual' else 'transparent')
+
+			self.captures_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'captures' else 'transparent')
+			self.species_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'species' else 'transparent')
+			self.maps_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'maps' else 'transparent')
+
+			# show selected frame
+			if name == 'upload':
+				self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+			else:
+				self.uploadFrame.grid_forget()
+			if name == 'preprocess':
+				self.preprocessFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+			else:
+				self.preprocessFrame.grid_forget()
+			if name == 'captures':
+				self.capturesFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+			else:
+				self.capturesFrame.grid_forget()
+			if name == 'species':
+				self.speciesFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+			else:
+				self.speciesFrame.grid_forget()
+			if name == 'maps':
+				self.mapsFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+			else:
+				self.mapsFrame.grid_forget()
+		except:
+			pass
+    
 if __name__ == '__main__':
     app = App()
     app.protocol('WM_DELETE_WINDOW', app.quit)

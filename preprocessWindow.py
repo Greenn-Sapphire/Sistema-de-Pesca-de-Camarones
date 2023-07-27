@@ -1,20 +1,19 @@
 import customtkinter as ctk
 import pandas as pd
-from CTkTable import *
-from CTkXYFrame import *
-from Widgets.scrollablecheckboxWidget import ScrollableCheckBoxFrame
 
+from Widgets.scrollablecheckboxWidget import ScrollableCheckBoxFrame
 from datetime import datetime
-from Widgets.style import Estilo
-from dataframe import Data
-from mapWindow import maps
+from CTkXYFrame import *
+from CTkTable import *
+
 from capturesWindow import captures
 from speciesWindow import species
+from mapWindow import maps
+from dataframe import Data
 
 class preprocess(ctk.CTkFrame):
 	def __init__(self, master):
 		super().__init__(master)
-		estilo = Estilo()
 		self.grid(sticky= 'nswe')
 		self.grid_columnconfigure(1, weight = 1) #Darle todo el espacio restante a la Tabla
 		self.grid_rowconfigure(0, weight = 1) #Darle todo el espacio restante al ScrollableFrame
@@ -58,8 +57,11 @@ class preprocess(ctk.CTkFrame):
 		self.Label_Reg.grid(row = 11, column = 0, sticky = 'w', padx = 4)
 		self.Scroll_Check_Sub.grid(row = 12, column = 0, padx = 2, pady = 2, sticky = 'ew')
 		
-		self.uploadbutton = ctk.CTkButton(self, text = 'Preprocesar datos', command = self.button_callbck)
-		self.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+		self.filterbutton = ctk.CTkButton(self, text = 'Filtrar datos', command = self.button_callbck)
+		self.filterbutton.grid(row = 2, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+		
+		self.preprocessbutton = ctk.CTkButton(self, text = 'Preprocesar datos', command = self.button_callbck)
+		self.preprocessbutton.grid(row = 3, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
 
 		self.frame = CTkXYFrame(self)
 		self.frame.grid(row = 0, column = 1, rowspan = 4, sticky = 'nswe', padx = 2, pady = 8)
