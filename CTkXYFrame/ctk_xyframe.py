@@ -16,12 +16,12 @@ class CTkXYFrame(customtkinter.CTkFrame):
                  **kwargs):
         
         self.parent_frame = customtkinter.CTkFrame(master=master, **kwargs)
-        self.bg_color = self.parent_frame._apply_appearance_mode(self.parent_frame.cget("fg_color"))
+        self.bg_color = self.parent_frame._apply_appearance_mode(self.parent_frame.cget("bg_color"))
         self.xy_canvas = Canvas(self.parent_frame, bg=self.bg_color, borderwidth=0, highlightthickness=0)
         self.parent_frame.rowconfigure(0,weight=1)
         self.parent_frame.columnconfigure(0,weight=1)
         
-        customtkinter.CTkFrame.__init__(self, master=self.xy_canvas, fg_color=self.parent_frame.cget("fg_color"))
+        customtkinter.CTkFrame.__init__(self, master=self.xy_canvas, fg_color=self.parent_frame.cget("bg_color"))
 
         self.xy_canvas.create_window((0,0), window=self, anchor="nw")
         

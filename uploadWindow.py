@@ -1,7 +1,10 @@
+from datetime import datetime
+from tkinter import ttk
 import customtkinter as ctk
 import pandas as pd
 import os
 
+from Widgets.scrollablecheckboxWidget import ScrollableCheckBoxFrame
 from tkinter.filedialog import askopenfilename
 from CTkMessagebox import CTkMessagebox
 from CTkXYFrame import *
@@ -38,12 +41,28 @@ class upload(ctk.CTkFrame):
 		self.uploadbutton = ctk.CTkButton(self, text = 'Cargar archivo', command = self.readDataframe)
 		self.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
 		
-		self.frame = CTkXYFrame(self)
+		self.frame = ctk.CTkFrame(self)
 		self.frame.grid(row = 0, column = 1, rowspan = 4, sticky = 'nswe', padx = 2, pady = 8)
+		self.frame.grid_rowconfigure(1, weight = 1)
+		self.frame.grid_columnconfigure(0, weight = 1)
+
+		self.searchFrame = ctk.CTkFrame(self.frame, fg_color = 'transparent')
+		self.searchFrame.grid(row = 0, column = 0, sticky = 'ew', padx = 10, pady = (8, 0))
+		self.searchFrame.grid_rowconfigure(0, weight = 1)
+
+		self.searchButton = ctk.CTkButton(self.searchFrame, text = 'Buscar', state = 'disabled', command = self.searchOnDataframe)
+		self.searchButton.grid(row = 0, column = 0, sticky = 'w', padx = (0, 5))
+
+		self.rowTextBox = ctk.CTkEntry(self.searchFrame, width = 180, placeholder_text = 'Ingresa un registro a buscar')
+		self.rowTextBox.configure(state = 'disabled')
+		self.rowTextBox.grid(row = 0, column = 1, sticky = 'ew')
+		
+		self.scrollFrame = CTkXYFrame(self.frame, fg_color = 'transparent')
+		self.scrollFrame.grid(row = 1, column = 0, sticky = 'nswe', pady = (2, 0))
 
 	def readDataframe(self):
 		try:
-			file = askopenfilename(initialdir = 'C://', filetypes = [('Excel', '*.xlsx'), ('CSV', '*.csv')])
+			file = askopenfilename(initialdir = 'C://', filetypes = [('Excel', '*.xlsx *.xls'), ('CSV', '*.csv'), ('Todos los archivos', '*.*')])
 			path, extension = os.path.splitext(file)
 			match extension:
 				case '.csv':
@@ -51,21 +70,19 @@ class upload(ctk.CTkFrame):
 				case '.xlsx':
 					Data.dataframe = pd.read_excel(file)
 
-			self.changeDType(Data.dataframe)
-			self.showInfo(Data.dataframe)
-			self.createTable(Data.dataframe)
-
-			self.master.master.preprocessFrame = preprocess(self.master)
-			self.master.master.preprocessFrame.grid_forget()
-			self.master.master.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-
-			self.master.master.upload_button.configure(command = self.master.master.upload_button_event)
-			self.master.master.preprocess_button.configure(state = 'normal')
-
-			CTkMessagebox(title = 'Aviso', message = 'Tabla creada con éxito', icon = 'check')
+			CTkMessagebox(title = 'Aviso', message = 'Archivo cargado con éxito', icon = 'check')
 		except:
 			CTkMessagebox(title = 'Error', message = 'No se ha seleccionado ningún archivo', icon = 'cancel')
 			return
+
+		self.changeDType(Data.dataframe)
+		self.showInfo(Data.dataframe)
+		self.createTable(Data.dataframe)
+
+		#self.master.master.preprocessFrame = preprocess(self.master)
+
+		self.master.master.upload_button.configure(command = lambda: self.master.master.select_frame_by_name('upload'))
+		self.master.master.preprocess_button.configure(state = 'normal')
 
 	def showInfo(self, df):
 		self.DataCol = ctk.CTkLabel(self.infoFrame, text = len(df.columns))
@@ -77,14 +94,62 @@ class upload(ctk.CTkFrame):
 		self.DataRepeat.grid(row = 6, column = 0, sticky ='ew', pady = (0, 2))
 		self.DataEmpty.grid(row = 8, column = 0, sticky ='ew', pady = (0, 2))
 
+		self.filterFrame = ctk.CTkScrollableFrame(self)
+		self.filterFrame.configure(corner_radius = 5)
+		#self.filterFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
+		self.filterFrame.grid_rowconfigure(8, weight = 1)
+		self.filterFrame.grid_columnconfigure(0, weight = 1)
+	
+		self.filterLabel = ctk.CTkLabel(self.filterFrame, text = 'Filtros', font = ctk.CTkFont(size = 15, weight = 'bold'))
+		self.filterLabel.grid(row = 0, column = 0, padx = 20, pady = 20)
+
+		self.Label_Project = ctk.CTkLabel(self.filterFrame, text = 'Proyecto:', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Scroll_Check_Project = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe['PROYECTO/SIP'].unique().tolist())
+		self.Label_Project.grid(row = 1, column = 0, sticky = 'w', padx = 4)
+		self.Scroll_Check_Project.grid(row=2, column=0, padx=2, pady=2, sticky='ns')
+
+		self.Label_Year = ctk.CTkLabel(self.filterFrame, text = 'Año:', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Scroll_Check_Year = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe['AÑO'].unique().tolist())
+		self.Label_Year.grid(row = 3, column = 0, sticky = 'w', padx = 4)
+		self.Scroll_Check_Year.grid(row=4, column=0, padx=2, pady=2, sticky='ns')
+
+		self.Label_Date = ctk.CTkLabel(self.filterFrame, text = 'Fecha:', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Scroll_Check_Date = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe['FECHA'].unique().tolist())
+		self.Label_Date.grid(row = 5, column = 0, sticky = 'w', padx = 4)
+		self.Scroll_Check_Date.grid(row = 6, column = 0, padx = 2, pady = 2, sticky = 'ew')
+			
+		self.Label_Area = ctk.CTkLabel(self.filterFrame, text = 'Área:', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Scroll_Check_Area = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe['AREA'].unique().tolist())
+		self.Label_Area.grid(row = 7, column = 0, sticky = 'w', padx = 4)
+		self.Scroll_Check_Area.grid(row = 8, column = 0, padx = 2, pady = 2, sticky = 'ew')
+			
+		self.Label_Reg = ctk.CTkLabel(self.filterFrame, text = 'Región:', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Scroll_Check_Reg = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe['REGION'].unique().tolist())
+		self.Label_Reg.grid(row = 9, column = 0, sticky = 'w', padx = 4)
+		self.Scroll_Check_Reg.grid(row = 10, column = 0, padx = 2, pady = 2, sticky = 'ew')
+			
+		self.Label_Reg = ctk.CTkLabel(self.filterFrame, text = 'Subzona:', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Scroll_Check_Sub = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe['SUBZONA'].unique().tolist())
+		self.Label_Reg.grid(row = 11, column = 0, sticky = 'w', padx = 4)
+		self.Scroll_Check_Sub.grid(row = 12, column = 0, padx = 2, pady = 2, sticky = 'ew')
+		
+		self.filterbutton = ctk.CTkButton(self, text = 'Filtrar datos')
+		#self.filterbutton.grid(row = 2, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+		
+		self.preprocessbutton = ctk.CTkButton(self, text = 'Preprocesar datos')
+		#self.preprocessbutton.grid(row = 3, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+
 	def createTable(self, df):
 		try:
 			df_list = df.values.tolist()
 			column_names = df.columns.tolist()
 			df_list.insert(0, column_names)
-			
-			self.table = CTkTable(self.frame, row = 30, hover_color = '#778899', values = df_list)
+
+			#CTkTable Option
+			self.table = CTkTable(self.scrollFrame, row = 21, hover_color = '#778899', values = df_list, command = self.UpdateData)
 			self.table.grid(row = 0, column = 0)
+			self.rowTextBox.configure(state = 'normal')
+			self.searchButton.configure(state = 'normal')
 		except:
 			CTkMessagebox(title = 'Error', message = 'La tabla no se pudo crear', icon = 'cancel')
 			return
@@ -144,3 +209,106 @@ class upload(ctk.CTkFrame):
 		df['EDO_MAD'] = df['EDO_MAD'].astype(int)
 		df['WA'] = df['WA'].astype(float)
 		df['OBSERV'] = df['OBSERV'].astype(str)
+
+	def UpdateData(self, data):					
+		msn = 'Introduce un nuevo valor\n{}\n\nFila: {}\tColumna: {}'.format(data['value'], data['row'], data['column'])
+		dialog = ctk.CTkInputDialog(text = msn, title = 'Modificar valor')
+
+		new_value = dialog.get_input()
+		new_index = self.rowTextBox.get()
+
+		if new_index is not None and new_index != '':
+			try:
+				new_index = int(new_index)
+				new_index = new_index - 1
+				if new_index >= 0 and new_index <= Data.dataframe.index[-1]:
+					data['row'] = new_index
+					self.filtertable.insert(1, data['column'], new_value)
+					self.table.insert(data['row']+1, data['column'], new_value)
+				else:
+					CTkMessagebox(title = 'Error', message = 'El valor introducido es mayor a la cantidad de registros', icon = 'cancel')
+					return
+			except:
+				CTkMessagebox(title = 'Error', message = 'El valor introducido no es un número', icon = 'cancel')
+				return
+
+		try:
+			new_value = new_value.strip()
+		except:
+			pass
+
+		if new_value is not None and new_value != '':
+			self.table.insert(data['row'], data['column'], new_value)
+
+			col_name = self.table.get_column(data['column'])
+			col_name = col_name[0]
+
+			if col_name in ['Hr_INI', 'Hr_FIN']:
+				new_value = datetime.strptime(new_value, '%H:%M:%S').time()
+			else:
+				match Data.dataframe[col_name].dtype:
+					case 'int64':
+						new_value = int(new_value)
+					case 'int32':
+						new_value = int(new_value)
+					case 'float32':
+						new_value = float(new_value)
+					case 'float64':
+						new_value = float(new_value)
+					case 'object':
+						new_value = str(new_value)
+					case 'datetime64[ns]':
+						new_value = pd.to_datetime(new_value)
+					case _:
+						print('Tipo de dato no reconocido: ', Data.dataframe[col_name].dtype)
+
+			if not Data.dataframe[col_name].isin([new_value]).any():
+				Data.dataframe.iat[data['row'], data['column']] = new_value
+				
+				match col_name:
+					case 'PROYECTO/SIP':
+						self.destroywidgets(self.Scroll_Check_Project, col_name, 2)
+					case 'AÑO':
+						self.destroywidgets(self.Scroll_Check_Year, col_name, 4)
+					case 'FECHA':
+						self.destroywidgets(self.Scroll_Check_Date, col_name, 6)
+					case 'AREA':
+						self.destroywidgets(self.Scroll_Check_Area, col_name, 8)
+					case 'REGION':
+						self.destroywidgets(self.Scroll_Check_Reg, col_name, 10)
+					case 'SUBZONA':
+						self.destroywidgets(self.Scroll_Check_Sub, col_name, 12)
+
+	def destroywidgets(self, widget, col_name, irow):
+		widget.grid_forget()
+		widget.destroy()
+		widget = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe[col_name].unique().tolist())
+		widget.grid(row = irow, column = 0, padx = 2, pady = 2, sticky = 'ew')
+	
+	def searchOnDataframe(self):
+		new_value = self.rowTextBox.get()
+		if new_value is None or new_value == '':
+			try:
+				self.filtertable.grid_forget()
+				self.table.grid()
+			except:
+				return
+		else:
+			try:
+				index = int(new_value)
+				index = index - 1
+				if index >= 0 and index <= Data.dataframe.index[-1]:
+					df = Data.dataframe.iloc[[index]]
+					df_list = df.values.tolist()
+					column_names = df.columns.tolist()
+					df_list.insert(0, column_names)
+
+					self.table.grid_forget()
+					self.filtertable = CTkTable(self.scrollFrame, hover_color = '#778899', values = df_list, command = self.UpdateData)
+					self.filtertable.grid(row = 0, column = 0)
+				else:
+					CTkMessagebox(title = 'Error', message = 'El valor introducido es mayor o menor a la cantidad de registros', icon = 'cancel')
+					return
+			except:
+				CTkMessagebox(title = 'Error', message = 'El valor introducido no es un número', icon = 'cancel')
+				return

@@ -43,25 +43,24 @@ class App(ctk.CTk):
 		#en este caso se pegará norte a sur 'ns', para este a oeste es 'ew'
 		#https://www.pythontutorial.net/tkinter/tkinter-grid/
 		self.navigation_frame.grid(row=0, column=0, sticky='ns')
-		#Ya entendí como funciona, aquí se define el espacio que ocupara la columna 3, no el definir el número de columnas
+		#Ya entendí como funciona, aquí se define el espacio que ocupara la fila 5, no el definir el número de columnas
 		self.navigation_frame.grid_rowconfigure(5, weight=1)
-		#Lo mismo aquí se define la cantidad de espacio que ocupara la fila 0
+		#Lo mismo aquí se define la cantidad de espacio que ocupara la columna 0
 		self.navigation_frame.grid_columnconfigure(0, weight=1)
 
-		#ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.home_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
 		self.navigation_frame_label = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.menu_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
 		self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
 
 		self.upload_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.upload_image, text='Cargar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Load data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w')
 		self.upload_button.grid(row=1, column=0, sticky='new')
-		self.preprocess_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.edit_image, text='Prepocesar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Visualize data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.preprocess_button_event)
+		self.preprocess_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.edit_image, text='Prepocesar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Visualize data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('preprocess'))
 		self.preprocess_button.grid(row=2, column=0, sticky='new')
 
-		self.captures_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Lances' if settings['SETTINGS']['language'] == 'Spanish' else 'Captures', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.captures_button_event)
+		self.captures_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Lances' if settings['SETTINGS']['language'] == 'Spanish' else 'Captures', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('captures'))
 		self.captures_menu_button.grid(row=3, column=0, sticky='new')
-		self.species_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Especies' if settings['SETTINGS']['language'] == 'Spanish' else 'Species', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.species_button_event)
+		self.species_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Especies' if settings['SETTINGS']['language'] == 'Spanish' else 'Species', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('species'))
 		self.species_menu_button.grid(row=4, column=0, sticky='new')
-		self.maps_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.map_image, text='Mapas' if settings['SETTINGS']['language'] == 'Spanish' else 'Maps', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=self.maps_button_event)
+		self.maps_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.map_image, text='Mapas' if settings['SETTINGS']['language'] == 'Spanish' else 'Maps', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('maps'))
 		self.maps_menu_button.grid(row=5, column=0, sticky='new')
 
 		self.appearance_mode_menu = ctk.CTkOptionMenu(self.navigation_frame, values=['System', 'Light', 'Dark'], command=self.change_appearance_mode_event)
@@ -131,24 +130,6 @@ class App(ctk.CTk):
 	def change_language_event(self, new_language):
 		self.changeConfig('language', new_language)
 
-	#Cuando se usa el atributo commad desde un objeto CTkButton solo arrojara un valor que será 'self'
-	#Aunque si se quieren pasar mas valores a esta función nos dará un error por lo que es mejor solo recibir los valores que envia el objeto
-	def upload_button_event(self):
-		#Desde dentro de la función podremos hacer uso de cualquier variable
-		self.select_frame_by_name('upload')
-
-	def preprocess_button_event(self):
-		self.select_frame_by_name('preprocess')
-
-	def captures_button_event(self):
-		self.select_frame_by_name('captures')
-
-	def species_button_event(self):
-		self.select_frame_by_name('species')
-
-	def maps_button_event(self):
-		self.select_frame_by_name('maps')
-
 	#Funcion que leera el archivo config.ini
 	def readConfig(self):
 		settings = configparser.ConfigParser()
@@ -176,12 +157,25 @@ class App(ctk.CTk):
 			# show selected frame
 			if name == 'upload':
 				self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+				self.uploadFrame.filterFrame.grid_forget()
+				self.uploadFrame.filterbutton.grid_forget()
+				self.uploadFrame.preprocessbutton.grid_forget()
+				self.uploadFrame.infoFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
+				self.uploadFrame.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
 			else:
-				self.uploadFrame.grid_forget()
+				if not self.uploadFrame.winfo_viewable():
+					self.uploadFrame.grid_forget()
 			if name == 'preprocess':
-				self.preprocessFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+				self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+				self.uploadFrame.infoFrame.grid_forget()
+				self.uploadFrame.uploadbutton.grid_forget()
+				self.uploadFrame.filterFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
+				self.uploadFrame.filterbutton.grid(row = 2, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+				self.uploadFrame.preprocessbutton.grid(row = 3, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+				#self.preprocessFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
 			else:
-				self.preprocessFrame.grid_forget()
+				if not self.uploadFrame.winfo_viewable():
+					self.uploadFrame.grid_forget()
 			if name == 'captures':
 				self.capturesFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
 			else:

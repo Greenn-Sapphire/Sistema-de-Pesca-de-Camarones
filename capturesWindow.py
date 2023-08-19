@@ -10,6 +10,7 @@ from dataframe import Data
 class captures(ctk.CTkFrame):
 	def __init__(self, master):
 		super().__init__(master)
+		self.grid_remove()
 		self.grid(sticky= 'nswe')
 		self.grid_columnconfigure(1, weight = 1)
 		self.grid_rowconfigure(0, weight = 1)
