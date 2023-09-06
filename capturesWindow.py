@@ -74,67 +74,61 @@ class captures(ctk.CTkFrame):
 
 	def createPlots(self, df):
 		# Crear los datos y generar la gráfica usando Seaborn
-		fig, axs = plt.subplots(2, 2, figsize=(12, 8), facecolor='none')
-		plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.3, hspace=0.8)
-		#plt.tight_layout()
-
+		fig, axs = plt.subplots(4, figsize=(9, 16), facecolor='none')
 
 		conteo_especies = df['ESPECIE'].value_counts()
-		conteo_especies_top20 = conteo_especies.head(10)
-		sns.barplot(x=conteo_especies_top20.index, y=conteo_especies_top20.values, ax = axs[0, 0])
+		conteo_especies_top20 = conteo_especies.head(20)
+		axs[0].grid(True, linestyle = '--', alpha = 0.5)
+		sns.barplot(x=conteo_especies_top20.values, y=conteo_especies_top20.index, ax = axs[0])
 
 		# Agregar etiquetas y título
-		#axs[0, 0].set_xlabel('Especie')
-		#axs[0, 0].set_ylabel('Cantidad Capturada')
-		axs[0, 0].set_title('Conteo de las primeras 10 especies más capturadas', fontsize = 10)
-		axs[0, 0].tick_params(axis = 'x', labelsize = 8)
-		axs[0, 0].tick_params(axis = 'y', labelsize = 8)
-		axs[0, 0].set_xticklabels(axs[0, 0].get_xticklabels(), rotation = 90)
+		axs[0].set_title('Conteo de las primeras 10 especies más capturadas', fontsize = 10)
+		axs[0].tick_params(axis = 'x', labelsize = 8)
+		axs[0].tick_params(axis = 'y', labelsize = 8)
 
 
 		conteo_grupos = df['GRUPO'].value_counts()
-		sns.barplot(x=conteo_grupos.index, y=conteo_grupos.values, ax = axs[0, 1])
+		axs[1].grid(True, linestyle = '--', alpha = 0.5)
+		sns.barplot(x=conteo_grupos.values, y=conteo_grupos.index, ax = axs[1])
 
 		# Agregar etiquetas y título
-		#axs[0, 1].set_xlabel('Grupo')
-		#axs[0, 1].set_ylabel('Cantidad de Especies')
-		axs[0, 1].set_title('Cantidad de Especies por Grupo', fontsize = 10)
-		axs[0, 1].tick_params(axis = 'x', labelsize = 8)
-		axs[0, 1].tick_params(axis = 'y', labelsize = 8)
-		axs[0, 1].set_xticklabels(axs[0, 1].get_xticklabels(), rotation = 90)
+		axs[1].set_title('Cantidad de Especies por Grupo', fontsize = 10)
+		axs[1].tick_params(axis = 'x', labelsize = 8)
+		axs[1].tick_params(axis = 'y', labelsize = 8)
 
 		
 		data_grouped = df.groupby('PROF/m').agg({'Camaron/kg': 'sum', 'FAC/kg': 'sum'}).reset_index()
-		sns.barplot(x='PROF/m', y='FAC/kg', data=data_grouped, color='orange', label='FAC/kg', ax = axs[1, 0])
-		sns.barplot(x='PROF/m', y='Camaron/kg', data=data_grouped, color='blue', label='Camaron/kg', ax = axs[1, 0])
+		axs[2].grid(True, linestyle = '--', alpha = 0.5)
+		sns.barplot(x='PROF/m', y='FAC/kg', data=data_grouped, color='orange', label='FAC/kg', ax = axs[2])
+		sns.barplot(x='PROF/m', y='Camaron/kg', data=data_grouped, color='blue', label='Camaron/kg', ax = axs[2])
 
 		#Agregar leyendas y etiquetas
-		axs[1, 0].set_xlabel('')
-		axs[1, 0].set_ylabel('')
-		axs[1, 0].set_title('KG de Camarón y FAC capturado por Prof.', fontsize = 10)
-		axs[1, 0].tick_params(axis = 'x', labelsize = 8)
-		axs[1, 0].tick_params(axis = 'y', labelsize = 8)
-		axs[1, 0].set_xticklabels(axs[1, 0].get_xticklabels(), rotation = 90)
-		lines, labels = axs[1, 0].get_legend_handles_labels()
-		axs[1, 0].legend(lines, labels)
+		axs[2].set_xlabel('')
+		axs[2].set_ylabel('')
+		axs[2].set_title('KG de Camarón y FAC capturado por Prof.', fontsize = 10)
+		axs[2].tick_params(axis = 'x', labelsize = 8)
+		axs[2].tick_params(axis = 'y', labelsize = 8)
+		lines, labels = axs[2].get_legend_handles_labels()
+		axs[2].legend(lines, labels)
 
 
 		# Crear la gráfica de lineas
-		#conteo_especies = df_resampled.resample('D')['ESPECIE'].count()
 		df_resampled = df.copy()
 		df_resampled['FECHA'] = pd.to_datetime(df_resampled['FECHA'], format='%d/%m/%Y')
 		df_resampled.set_index('FECHA', inplace=True)
 		df_resampled = df_resampled.resample('D')['ESPECIE'].count()
-		sns.lineplot(x=df_resampled.index, y=df_resampled.values, data=df_resampled, ax = axs[1, 1])
+		axs[3].grid(True, linestyle = '--', alpha = 0.5)
+		sns.lineplot(x=df_resampled.index, y=df_resampled.values, data=df_resampled, ax = axs[3])
 
 		# Agregar etiquetas y título
-		#axs[1, 1].set_xlabel('Fecha')
-		#axs[1, 1].set_ylabel('Captura Total')
-		axs[1, 1].set_title('Total de especies capturadas por día', fontsize = 10)
-		axs[1, 1].tick_params(axis = 'x', labelsize = 8)
-		axs[1, 1].tick_params(axis = 'y', labelsize = 8)
-		axs[1, 1].set_xticks(axs[1, 1].get_xticks())
-		axs[1, 1].set_xticklabels(axs[1, 1].get_xticklabels(), rotation = 90)
+		axs[3].set_xlabel('')
+		axs[3].set_ylabel('')
+		axs[3].set_title('Total de especies capturadas por día', fontsize = 10)
+		axs[3].tick_params(axis = 'x', labelsize = 8)
+		axs[3].tick_params(axis = 'y', labelsize = 8)
+		axs[3].set_xticks(axs[3].get_xticks())
+
+		plt.tight_layout()
 
 		return fig
 

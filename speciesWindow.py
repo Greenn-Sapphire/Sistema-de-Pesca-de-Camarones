@@ -58,26 +58,29 @@ class species(ctk.CTkFrame):
 
 	def createPlots(self, df):
 		# Crear los datos y generar la gráfica usando Seaborn
-		fig, axs = plt.subplots(2, 2, figsize=(12, 8), facecolor='none')
-		plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.3, hspace=0.8)
+		fig, axs = plt.subplots(4, figsize=(9, 16), facecolor='none')
 
-		axs[0, 0].pie(df['DIA/NOCHE'].value_counts(), autopct='%1.1f%%', colors=['skyblue', 'lightcoral'])
-		axs[0, 0].set_title('Porcentaje de lances de día y de noche', fontsize = 10)
+		axs[0].pie(df['DIA/NOCHE'].value_counts(), autopct='%1.1f%%', colors=['skyblue', 'lightcoral'])
+		axs[0].set_title('Porcentaje de lances de día y de noche', fontsize = 10)
 		labels = df['DIA/NOCHE'].unique()
-		axs[0, 0].legend(labels, loc = 'upper right')
-		
-		sns.boxplot(x='LONG_TOT', data=df, ax = axs[0, 1])
-		axs[0, 1].set_title('Distribución de longitud de especies', fontsize = 10)
-		axs[0, 1].set_xlabel('')
+		axs[0].legend(labels, loc = 'upper right')
 
-		axs[1, 0].pie(df['SEXO'].value_counts(), autopct='%1.1f%%', colors=['skyblue', 'lightcoral', 'blueviolet'])
-		axs[1, 0].set_title('Porcentaje de sexos', fontsize = 10)
+		etiquetas_personalizadas = {1: 'Hembra', 2: 'Macho', 3: 'Indeterminado'}
+		df['SEXO'] = df['SEXO'].map(etiquetas_personalizadas)
+		axs[1].pie(df['SEXO'].value_counts(), autopct='%1.1f%%', colors=['skyblue', 'lightcoral', 'blueviolet'])
+		axs[1].set_title('Porcentaje de sexos', fontsize = 10)
 		labels = df['SEXO'].unique()
-		axs[1, 0].legend(labels, loc = 'upper right')
+		axs[1].legend(labels, loc = 'upper right')
+		
+		sns.boxplot(x='LONG_TOT', data=df, ax = axs[2])
+		axs[2].set_title('Distribución de longitud de especies', fontsize = 10)
+		axs[2].set_xlabel('')
 
-		sns.boxplot(x='PESO', data=df, ax = axs[1, 1])
-		axs[1, 1].set_title('Distribución de peso de especies', fontsize = 10)
-		axs[1, 1].set_xlabel('')
+		sns.boxplot(x='PESO', data=df, ax = axs[3])
+		axs[3].set_title('Distribución de peso de especies', fontsize = 10)
+		axs[3].set_xlabel('')
+
+		plt.tight_layout()
 
 		return fig
 
