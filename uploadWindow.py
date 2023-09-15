@@ -2,6 +2,7 @@ from datetime import datetime
 from tkinter import ttk
 import customtkinter as ctk
 import pandas as pd
+import traceback
 import os
 
 from Widgets.scrollablecheckboxWidget import ScrollableCheckBoxFrame
@@ -36,10 +37,12 @@ class upload(ctk.CTkFrame):
 		self.Label_Regis = ctk.CTkLabel(self.infoFrame, text = 'Número de registros', font = ctk.CTkFont(size = 12, weight = 'bold'))
 		self.Label_Repeat = ctk.CTkLabel(self.infoFrame, text = 'Registros repetidos', font = ctk.CTkFont(size = 12, weight = 'bold'))
 		self.Label_Empty = ctk.CTkLabel(self.infoFrame, text = 'Registros vacios', font = ctk.CTkFont(size = 12, weight = 'bold'))
+		self.Label_Type = ctk.CTkLabel(self.infoFrame, text = 'Tipo de dato', font = ctk.CTkFont(size = 12, weight = 'bold'))
 		self.Label_ColNum.grid(row = 1, column = 0, sticky = 'ew', pady = (2, 0))
 		self.Label_Regis.grid(row = 3, column = 0, sticky = 'ew', pady = (2, 0))
 		self.Label_Repeat.grid(row = 5, column = 0, sticky = 'ew', pady = (2, 0))
 		self.Label_Empty.grid(row = 7, column = 0, sticky = 'ew', pady = (2, 0))
+		self.Label_Type.grid(row = 9, column = 0, sticky = 'ew', pady = (2, 0))
 		
 		self.uploadbutton = ctk.CTkButton(self, text = 'Cargar archivo', command = self.readDataframe)
 		self.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
@@ -53,12 +56,17 @@ class upload(ctk.CTkFrame):
 		self.searchFrame.grid(row = 0, column = 0, sticky = 'ew', padx = 10, pady = (8, 0))
 		self.searchFrame.grid_rowconfigure(0, weight = 1)
 
-		self.searchButton = ctk.CTkButton(self.searchFrame, text = 'Buscar', state = 'disabled', command = self.searchOnDataframe)
+		self.searchButton = ctk.CTkButton(self.searchFrame, width = 60, text = 'Buscar', state = 'disabled', command = self.searchOnDataframe)
 		self.searchButton.grid(row = 0, column = 0, sticky = 'w', padx = (0, 5))
 
-		self.rowTextBox = ctk.CTkEntry(self.searchFrame, width = 180, placeholder_text = 'Ingresa un registro a buscar')
-		self.rowTextBox.configure(state = 'disabled')
-		self.rowTextBox.grid(row = 0, column = 1, sticky = 'ew')
+		self.rowTextBox = ctk.CTkEntry(self.searchFrame, width = 200, placeholder_text = 'Número de registro a buscar')
+		self.rowTextBox.grid(row = 0, column = 1, sticky = 'w')
+
+		self.searchButton2 = ctk.CTkButton(self.searchFrame, width = 70, text = 'Aplicar', state = 'disabled', command = self.createNewTable)
+		self.searchButton2.grid(row = 0, column = 2, sticky = 'e', padx = (10, 5))
+
+		self.rowsTextBox = ctk.CTkEntry(self.searchFrame, width = 160, placeholder_text = 'Registros a mostrar: 20')
+		self.rowsTextBox.grid(row = 0, column = 3, sticky = 'e')
 		
 		self.scrollFrame = CTkXYFrame(self.frame, fg_color = 'transparent')
 		self.scrollFrame.grid(row = 1, column = 0, sticky = 'nswe', pady = (2, 0))
@@ -74,6 +82,20 @@ class upload(ctk.CTkFrame):
 					case '.xlsx':
 						Data.dataframe = pd.read_excel(file)
 
+				def remove_accents(input_str):
+					accents = {
+						'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+						'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U'
+					}
+					return ''.join(accents.get(char, char) for char in input_str)
+
+				# Aplicar la función a los nombres de las columnas
+				Data.dataframe.columns = [remove_accents(col) for col in Data.dataframe.columns]
+
+				Data.dataframe['FECHA'] = pd.to_datetime(Data.dataframe['FECHA'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')  # Convertir a tipo datetime
+				Data.dataframe['Hr_INI'] = pd.to_datetime(Data.dataframe['Hr_INI'], format='%H:%M:%S').dt.time  # Convertir a tipo time
+				Data.dataframe['Hr_FIN'] = pd.to_datetime(Data.dataframe['Hr_FIN'], format='%H:%M:%S').dt.time  # Convertir a tipo time
+
 				CTkMessagebox(title = 'Aviso', message = 'Archivo cargado con éxito', icon = 'check')
 			else:
 				CTkMessagebox(title = 'Error', message = 'No se ha seleccionado ningún archivo', icon = 'cancel')
@@ -83,7 +105,6 @@ class upload(ctk.CTkFrame):
 			CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}', icon = 'warning')
 			return
 
-		self.changeDType(Data.dataframe)
 		self.showInfo(Data.dataframe)
 		self.createTable(Data.dataframe)
 
@@ -97,10 +118,12 @@ class upload(ctk.CTkFrame):
 		self.DataRegis = ctk.CTkLabel(self.infoFrame, text = len(df.index))
 		self.DataRepeat = ctk.CTkLabel(self.infoFrame, text = df.duplicated().sum())
 		self.DataEmpty = ctk.CTkLabel(self.infoFrame, text = df.isnull().sum())
+		self.DataType = ctk.CTkLabel(self.infoFrame, text = df.dtypes)
 		self.DataCol.grid(row = 2, column = 0, sticky ='ew', pady = (0, 2))
 		self.DataRegis.grid(row = 4, column = 0, sticky ='ew', pady = (0, 2))
 		self.DataRepeat.grid(row = 6, column = 0, sticky ='ew', pady = (0, 2))
 		self.DataEmpty.grid(row = 8, column = 0, sticky ='ew', pady = (0, 2))
+		self.DataType.grid(row = 10, column = 0, sticky ='ew', pady = (0, 2))
 
 		self.filterFrame = ctk.CTkScrollableFrame(self)
 		self.filterFrame.configure(corner_radius = 5)
@@ -147,6 +170,26 @@ class upload(ctk.CTkFrame):
 		self.preprocessbutton = ctk.CTkButton(self, text = 'Preprocesar datos', command = self.preprocessbutton_callbck)
 		#self.preprocessbutton.grid(row = 3, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
 
+	def createNewTable(self):
+		try:
+			num_rows = int(self.rowsTextBox.get())
+			if num_rows >= 1 and num_rows is not None and num_rows != '':
+				num_rows = num_rows + 1
+
+				self.table.destroy()
+				df_list = Data.dataframe.values.tolist()
+				column_names = Data.dataframe.columns.tolist()
+				df_list.insert(0, column_names)
+
+				#CTkTable Option
+				self.table = CTkTable(self.scrollFrame, row = num_rows, hover_color = '#778899', values = df_list, command = self.UpdateData)
+				self.table.grid(row = 0, column = 0)
+			else:
+				CTkMessagebox(title = 'Error', message = 'El valor introuducido no es valido', icon = 'cancel')
+		except:
+			CTkMessagebox(title = 'Error', message = 'El valor introuducido no es valido', icon = 'cancel')
+			return
+
 	def createTable(self, df):
 		try:
 			df_list = df.values.tolist()
@@ -158,65 +201,67 @@ class upload(ctk.CTkFrame):
 			self.table.grid(row = 0, column = 0)
 			self.rowTextBox.configure(state = 'normal')
 			self.searchButton.configure(state = 'normal')
+			self.rowsTextBox.configure(state = 'normal')
+			self.searchButton2.configure(state = 'normal')
 		except:
 			CTkMessagebox(title = 'Error', message = 'La tabla no se pudo crear', icon = 'cancel')
 			return
 
 	def changeDType(self, df):
-		df['PROYECTO/SIP'] = df['PROYECTO/SIP'].astype(int)
-		df['AÑO'] = df['AÑO'].astype(int)
-		df['FECHA'] = pd.to_datetime(df['FECHA'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')  # Convertir a tipo datetime
-		df['BARCO'] = df['BARCO'].astype(str)
-		df['CRUCERO'] = df['CRUCERO'].astype(int)
-		df['AREA'] = df['AREA'].astype(str)
-		df['REGION'] = df['REGION'].astype(str)
-		df['SUBZONA'] = df['SUBZONA'].astype(int)
-		df['ESTACION'] = df['ESTACION'].astype(int)
-		df['LANCE'] = df['LANCE'].astype(int)
+		columns_to_int = [
+			'PROYECTO/SIP', 'AÑO', 'CRUCERO', 'SUBZONA', 'ESTACION', 'LANCE',
+			'LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI',
+			'T °C', 'SALIN (0/00)', 'Nºind/Tot', 'Nºind/mes', 'Nºind/est',
+			'SEXO', 'EDO_MAD']
+		
+		columns_to_float = [
+			'PROF/m', 'FAC/kg', 'Camaron/kg', 'LONG_TOT', 'LONG_PAT',
+			'DIAME_DISCO', 'PESO', 'WA']
 
-		df['LAT_INI'] = df['LAT_INI'].astype(int)
-		df['LONG_INI'] = df['LONG_INI'].astype(int)
-		df['LAT_FIN'] = df['LAT_FIN'].astype(int)
-		df['LONG_FIN'] = df['LONG_FIN'].astype(int)
-		df['LAT_INI'] = df['LAT_INI'].astype(int)
+		columns_to_str = [
+			'BARCO', 'AREA', 'REGION', 'DIA/NOCHE', 'PLATAF', 'ESTRATO PROF.',
+			'GRUPO', 'CLAV_GRUP', 'ORDEN', 'CLA_ORDEN', 'FAMILIA', 'CLAVE_FAM',
+			'CLAVE_SP', 'CODIGOSPP', 'ESPECIE', 'OBSERV']
+		
+		for column in columns_to_int:
+			try:
+				if column == 'Nºind/Tot' or column == 'Nºind/mes' or column == 'Nºind/est' or column == 'EDO_MAD' or column == 'T °C' or column == 'SALIN (0/00)':
+					df[column] = df[column].fillna(0)
+				
+				if column == 'SEXO':
+					df[column] = df[column].fillna(3)
+				df[column] = df[column].astype(int)
 
-		df['Hr_INI'] = pd.to_datetime(df['Hr_INI'], format='%H:%M:%S').dt.time  # Convertir a tipo time
-		df['Hr_FIN'] = pd.to_datetime(df['Hr_FIN'], format='%H:%M:%S').dt.time  # Convertir a tipo time
-		df['DURACION'] = df['DURACION'].astype(int)  # Convertir a tipo timedelta
-		df['DIA/NOCHE'] = df['DIA/NOCHE'].astype(str)
-		df['PROF/m'] = df['PROF/m'].astype(float)
-		df['PLATAF'] = df['PLATAF'].astype(str)
-		df['ESTRATO PROF.'] = df['ESTRATO PROF.'].astype(str)
+			except Exception as e:
+				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\n{e}', icon = 'cancel')
+				return
+		
+		for column in columns_to_float:
+			try:
+				df[column] = df[column].astype(float)
+			except Exception as e:
+				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\n{e}', icon = 'cancel')
+				return
+		
+		for column in columns_to_str:
+			try:
+				df[column] = df[column].astype(str)
+			except Exception as e:
+				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\n{e}', icon = 'cancel')
+				return
 
-		df['T °C'] = df['T °C'].astype(int)
-		df['SALIN (0/00)'] = df['SALIN (0/00)'].astype(int)
-		df['FAC/kg'] = df['FAC/kg'].astype(float)
-		df['Camaron/kg'] = df['Camaron/kg'].astype(float)
+		self.master.master.mapsFrame = maps(self.master)
+		self.master.master.mapsFrame.grid_remove()
 
-		df['GRUPO'] = df['GRUPO'].astype(str)
-		df['CLAV_GRUP'] = df['CLAV_GRUP'].astype(str)
-		df['ORDEN'] = df['ORDEN'].astype(str)
-		df['CLA_ORDEN'] = df['CLA_ORDEN'].astype(str)
-		df['FAMILIA'] = df['FAMILIA'].astype(str)
-		df['CLAVE_FAM'] = df['CLAVE_FAM'].astype(str)
-		df['CLAVE_SP'] = df['CLAVE_SP'].astype(str)
-		df['CODIGOSPP'] = df['CODIGOSPP'].astype(str)
-		df['ESPECIE'] = df['ESPECIE'].astype(str)
+		self.master.master.capturesFrame = captures(self.master)
+		self.master.master.capturesFrame.grid_remove()
 
-		df['Nºind/Tot'] = df['Nºind/Tot'].fillna(0)
-		df['Nºind/Tot'] = df['Nºind/Tot'].astype(int)
-		df['Nºind/mes'] = df['Nºind/mes'].astype(int)
-		df['Nºind/est'] = df['Nºind/est'].astype(int)
-		df['LONG_TOT'] = df['LONG_TOT'].astype(float)
-		df['LONG_PAT'] = df['LONG_PAT'].astype(float)
-		df['DIAME_DISCO'] = df['DIAME_DISCO'].astype(float)
-		df['PESO'] = df['PESO'].astype(float)
-		df['SEXO'] = df['SEXO'].fillna(3)
-		df['SEXO'] = df['SEXO'].astype(int)
-		df['EDO_MAD'] = df['EDO_MAD'].fillna(0)
-		df['EDO_MAD'] = df['EDO_MAD'].astype(int)
-		df['WA'] = df['WA'].astype(float)
-		df['OBSERV'] = df['OBSERV'].astype(str)
+		self.master.master.speciesFrame = species(self.master)
+		self.master.master.speciesFrame.grid_remove()
+
+		self.master.master.captures_menu_button.configure(state = 'normal')
+		self.master.master.species_menu_button.configure(state = 'normal')
+		self.master.master.maps_menu_button.configure(state = 'normal')
 
 	def UpdateData(self, data):					
 		msn = 'Introduce un nuevo valor\n{}\n\nFila: {}\tColumna: {}'.format(data['value'], data['row'], data['column'])
@@ -352,24 +397,12 @@ class upload(ctk.CTkFrame):
 			df_list.insert(0, column_names)
 			
 			self.table = CTkTable(self.scrollFrame, row = 21, hover_color = '#778899', values = df_list, command = self.UpdateData)
-			self.table.grid(row = 0, column = 1, rowspan = 2, sticky = 'nsew', padx = 8, pady = 8)
+			self.table.grid(row = 0, column = 0, rowspan = 2, sticky = 'nsew', padx = 8, pady = 8)
 		except:
 			pass
 
 	def preprocessbutton_callbck(self):
-		self.master.master.mapsFrame = maps(self.master)
-		self.master.master.mapsFrame.grid_remove()
-
-		self.master.master.capturesFrame = captures(self.master)
-		self.master.master.capturesFrame.grid_remove()
-
-		self.master.master.speciesFrame = species(self.master)
-		self.master.master.speciesFrame.grid_remove()
-
-		self.master.master.captures_menu_button.configure(state = 'normal')
-		self.master.master.species_menu_button.configure(state = 'normal')
-		self.master.master.maps_menu_button.configure(state = 'normal')
-
+		self.changeDType(Data.dataframe)
 	
 	def updateScrollBox(self):
 		project_items = self.Scroll_Check_Project.get_checked_items()
