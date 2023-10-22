@@ -2,10 +2,10 @@ import customtkinter as ctk
 import configparser
 import os
 
-from PIL import Image
-
 from uploadWindow import upload
 from Archivos import *
+from PIL import Image
+
 #<a href="https://www.flaticon.com/free-icons/align" title="align icons">Align icons created by Freepik - Flaticon</a>
 #<a href="https://www.flaticon.com/free-icons/seo-full" title="seo full icons">Seo full icons created by Freepik - Flaticon</a>
 #<a href="https://www.flaticon.com/free-icons/up-arrow" title="up arrow icons">Up arrow icons created by Freepik - Flaticon</a>
@@ -160,14 +160,14 @@ class App(ctk.CTk):
 				self.uploadFrame.filterFrame.grid_forget()
 				self.uploadFrame.filterbutton.grid_forget()
 				self.uploadFrame.preprocessbutton.grid_forget()
-				self.uploadFrame.infoFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
+				self.uploadFrame.infoWidget.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
 				self.uploadFrame.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
 			else:
 				if not self.uploadFrame.winfo_viewable():
 					self.uploadFrame.grid_forget()
 			if name == 'preprocess':
 				self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-				self.uploadFrame.infoFrame.grid_forget()
+				self.uploadFrame.infoWidget.grid_forget()
 				self.uploadFrame.uploadbutton.grid_forget()
 				self.uploadFrame.filterFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
 				self.uploadFrame.filterbutton.grid(row = 2, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))

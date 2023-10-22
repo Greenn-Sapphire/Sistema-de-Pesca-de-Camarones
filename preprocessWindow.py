@@ -1,3 +1,4 @@
+"""
 import customtkinter as ctk
 import pandas as pd
 
@@ -9,10 +10,9 @@ from CTkTable import *
 from capturesWindow import captures
 from speciesWindow import species
 from mapWindow import maps
-from dataframe import Data
 
 class preprocess(ctk.CTkFrame):
-	def __init__(self, master):
+	def __init__(self, master, dataframe):
 		super().__init__(master)
 		self.grid_remove()
 		self.grid(sticky= 'nswe')
@@ -148,3 +148,4 @@ class preprocess(ctk.CTkFrame):
 		widget.destroy()
 		widget = ScrollableCheckBoxFrame(self.filterFrame, width=200, item_list = Data.dataframe[col_name].unique().tolist())
 		widget.grid(row = irow, column = 0, padx = 2, pady = 2, sticky = 'ew')
+"""
