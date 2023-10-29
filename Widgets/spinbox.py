@@ -1,10 +1,11 @@
 import customtkinter as ctk
 
 class SpinBoxWidget(ctk.CTkFrame):
-    def __init__(self, master, command=None, **kwargs):
+    def __init__(self, master, numrow, command=None, **kwargs):
         super().__init__(master, **kwargs)
         self.columnconfigure(1, weight=1)
         self.command = command
+        self.numrow = numrow
 
         self.subtract_button = ctk.CTkButton(self, text="-", width=48, height=26, command=self.subtract_button_callback)
         self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3, sticky="w")
@@ -16,7 +17,7 @@ class SpinBoxWidget(ctk.CTkFrame):
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3, sticky="e")
 
         self.entry.insert(0, "0")
-        self.set(20)
+        self.set(self.numrow)
     
     def add_button_callback(self):
         if self.command is not None:
@@ -27,6 +28,7 @@ class SpinBoxWidget(ctk.CTkFrame):
                 value += 1
                 self.entry.delete(0, "end")
                 self.entry.insert(0, value)
+                self.numrow = value
         except ValueError:
             return
 
@@ -39,6 +41,7 @@ class SpinBoxWidget(ctk.CTkFrame):
                 value -= 1
                 self.entry.delete(0, "end")
                 self.entry.insert(0, value)
+                self.numrow = value
         except ValueError:
             return
 

@@ -15,8 +15,8 @@ class species(ctk.CTkFrame):
 		self.grid_rowconfigure(0, weight = 1)
 		self.dataframe = dataframe		
 		
-		nonfilterlist = ['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI', 'Nºind/Tot', 
-				   'Nºind/mes', 'Nºind/est', 'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CLAVE_SP', 'OBSERV']
+		nonfilterlist = ['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI', 'Hr_INI', 'Hr_FIN', 'Nºind/Tot', 
+				   'Nºind/mes', 'Nºind/est', 'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CODIGOSPP', 'CLAVE_SP', 'OBSERV']
 
 		self.filterFrame = FilterPanel(self, self.dataframe, nonfilterlist, width = 150)
 		self.filterFrame.configure(corner_radius = 5)

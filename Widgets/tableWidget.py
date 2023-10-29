@@ -10,11 +10,14 @@ from CTkTable import *
 class TableWidget(ctk.CTkFrame):
     def __init__(self, master, df_list, config_image, dataframe, **kwargs):
         super().__init__(master, **kwargs)
+        self.originaldataframe = dataframe
         self.dataframe = dataframe
         self.searchFrame = ctk.CTkFrame(self, fg_color = 'transparent')
         self.searchFrame.grid(row = 0, column = 0, sticky = 'ew', padx = 10, pady = (8, 0))
         self.searchFrame.grid_rowconfigure(0, weight = 1)
         self.searchFrame.grid_columnconfigure(0, weight = 1)
+        self.numrow = 20
+        self.checks = self.originaldataframe.keys()
         
         self.configButton = ctk.CTkButton(self.searchFrame, text = '', image=config_image, width = 20, height = 20, command = self.open_config)
         self.configButton.grid(row = 0, column = 0, sticky = 'e')
@@ -27,7 +30,7 @@ class TableWidget(ctk.CTkFrame):
 
     def open_config(self):
         if self.config_window is None or not self.config_window.winfo_exists():
-            self.config_window = ToplevelWindow(self, self.dataframe)  # create window if its None or destroyed
+            self.config_window = ToplevelWindow(self, self.dataframe, self.numrow, self.checks)  # create window if its None or destroyed
         else:
             self.config_window.focus()  # if window exists focus it
 

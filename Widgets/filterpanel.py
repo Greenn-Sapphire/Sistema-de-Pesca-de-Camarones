@@ -40,7 +40,10 @@ class FilterPanel(ctk.CTkScrollableFrame):
                 data['frame'].set_checked(item)
 
     def apply_filter(self):
-        filtered_df = self.master.frame.config_window.getdataframe()
+        try:
+            filtered_df = self.master.frame.config_window.getdataframe()
+        except:
+            filtered_df = self.dataframe
 
         for column_name, data in self.scroll_checkboxs.items():
             items = data['frame'].get_checked_items()

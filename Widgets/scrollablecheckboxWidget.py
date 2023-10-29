@@ -41,3 +41,8 @@ class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
         for checkbox in self.checkbox_list:
             if checkbox.cget('text') == item:
                 checkbox.select()
+
+    def set_all_checked(self):
+        # Marca el checkbox correspondiente al elemento proporcionado como seleccionado
+        for checkbox in self.checkbox_list:
+            checkbox.select()

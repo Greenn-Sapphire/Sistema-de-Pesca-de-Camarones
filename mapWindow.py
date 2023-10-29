@@ -14,10 +14,10 @@ class maps(ctk.CTkFrame):
 		self.dataframe = dataframe
 		self.marker_list = []
 		
-		nonfilterlist = ['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI',
+		nonfilterlist = ['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI', 'Hr_INI', 'Hr_FIN',
 				   'Nºind/Tot', 'Nºind/mes', 'Nºind/est', 
 				   'LONG_TOT', 'LONG_PAT', 'DIAME_DISCO', 'PESO', 'WA', 'SEXO', 'EDO_MAD',
-				   'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CLAVE_SP', 'OBSERV']
+				   'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CODIGOSPP', 'CLAVE_SP', 'OBSERV']
 
 		self.filterFrame = FilterPanel(self, self.dataframe, nonfilterlist, width = 150)
 		self.filterFrame.configure(corner_radius = 5)
@@ -60,12 +60,12 @@ class maps(ctk.CTkFrame):
 			textfin = f"Latitud: {row['LAT_FIN']}\nLongitud: {row['LONG_FIN']}\n"
 			text = f"Fecha: {row['FECHA']}\nBarco: {row['BARCO']}\nÁrea: {row['AREA']}\nRegión: {row['REGION']}\nDía/Noche: {row['DIA/NOCHE']}\nProfundidad (m): {row['PROF/m']}\nEstrato profundo: {row['ESTRATO PROF.']}\nTemperatura (°C): {row['T °C']}\nSalinidad (0/00): {row['SALIN (0/00)']}\nKg camarón: {row['Camaron/kg']}\nKg FAC: {row['FAC/kg']}"
 			
-			marker_ini = self.map_widget.set_marker(lat_ini, long_ini, marker_color_circle='black', marker_color_outside='cornflowerblue', text='', data=textini+text, text_color='black', command=on_click_ini)
+			#marker_ini = self.map_widget.set_marker(lat_ini, long_ini, marker_color_circle='black', marker_color_outside='cornflowerblue', text='', data=textini+text, text_color='black', command=on_click_ini)
 			marker_fin = self.map_widget.set_marker(lat_fin, long_fin, marker_color_circle='black', marker_color_outside='firebrick', text='', data=textfin+text, text_color='black', command=on_click_fin)
-			path = self.map_widget.set_path([marker_ini.position, marker_fin.position], color='darkgrey')
-			self.marker_list.append(marker_ini)
+			#path = self.map_widget.set_path([marker_ini.position, marker_fin.position], color='darkgrey')
+			#self.marker_list.append(marker_ini)
 			self.marker_list.append(marker_fin)
-			self.marker_list.append(path)
+			#self.marker_list.append(path)
 
 
 #self.map_widget.set_tile_server("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")  # OpenStreetMap (default)

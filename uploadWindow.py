@@ -74,9 +74,9 @@ class upload(ctk.CTkFrame):
 
 	def showInfo(self):
 		self.infoWidget.showinfo(self.dataframe)
-		nonfilterlist = ['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI', 'Nºind/Tot',
+		nonfilterlist = ['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI', 'Hr_INI', 'Hr_FIN', 'Nºind/Tot',
 				   'Nºind/mes', 'Nºind/est', 'LONG_TOT', 'LONG_PAT', 'DIAME_DISCO', 'PESO', 'WA',
-				   'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CLAVE_SP', 'OBSERV']
+				   'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CODIGOSPP', 'CLAVE_SP', 'OBSERV']
 
 		self.filterFrame = FilterPanel(self, self.dataframe, nonfilterlist, width = 150)
 		self.filterFrame.configure(corner_radius = 5)
@@ -89,7 +89,6 @@ class upload(ctk.CTkFrame):
 		
 		self.preprocessbutton = ctk.CTkButton(self, text = 'Preprocesar datos', command = self.preprocessbutton_callbck)
 		#self.preprocessbutton.grid(row = 3, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
-
 
 	def createTable(self):
 		try:
@@ -149,14 +148,14 @@ class upload(ctk.CTkFrame):
 				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\n{e}', icon = 'cancel')
 				return
 
-		self.master.master.mapsFrame = maps(self.master, self.dataframe)
-		self.master.master.mapsFrame.grid_remove()
-
 		self.master.master.capturesFrame = captures(self.master, self.dataframe)
 		self.master.master.capturesFrame.grid_remove()
 
 		self.master.master.speciesFrame = species(self.master, self.dataframe)
 		self.master.master.speciesFrame.grid_remove()
+
+		self.master.master.mapsFrame = maps(self.master, self.dataframe)
+		self.master.master.mapsFrame.grid_remove()
 
 		self.master.master.captures_menu_button.configure(state = 'normal')
 		self.master.master.species_menu_button.configure(state = 'normal')
@@ -167,7 +166,7 @@ class upload(ctk.CTkFrame):
 			self.frame.table.destroy()
 			df_list = self.filterFrame.apply_filter()
 			
-			self.frame.table = CTkTable(self.frame.scrollFrame, row = 21, hover_color = '#778899', values = df_list, command = self.frame.UpdateData)
+			self.frame.table = CTkTable(self.frame.scrollFrame, row = self.frame.numrow + 1, hover_color = '#778899', values = df_list, command = self.frame.UpdateData)
 			self.frame.table.grid(row = 0, column = 0, rowspan = 2, sticky = 'nsew', padx = 8, pady = 8)
 		except Exception as e:
 			CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}', icon = 'warning')
