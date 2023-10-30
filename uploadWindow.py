@@ -10,6 +10,7 @@ from CTkMessagebox import CTkMessagebox
 from CTkXYFrame import *
 from CTkTable import *
 
+from dashboards import dashboards
 from capturesWindow import captures
 from speciesWindow import species
 from mapWindow import maps
@@ -148,17 +149,19 @@ class upload(ctk.CTkFrame):
 				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\n{e}', icon = 'cancel')
 				return
 
-		self.master.master.capturesFrame = captures(self.master, self.dataframe)
-		self.master.master.capturesFrame.grid_remove()
+		self.master.master.dashboardFrame = dashboards(self.master, self.dataframe)
+		self.master.master.dashboardFrame.grid_remove()
 
-		self.master.master.speciesFrame = species(self.master, self.dataframe)
-		self.master.master.speciesFrame.grid_remove()
+		#self.master.master.capturesFrame = captures(self.master, self.dataframe)
+		#self.master.master.capturesFrame.grid_remove()
+
+		#self.master.master.speciesFrame = species(self.master, self.dataframe)
+		#self.master.master.speciesFrame.grid_remove()
 
 		self.master.master.mapsFrame = maps(self.master, self.dataframe)
 		self.master.master.mapsFrame.grid_remove()
 
-		self.master.master.captures_menu_button.configure(state = 'normal')
-		self.master.master.species_menu_button.configure(state = 'normal')
+		self.master.master.dashboard_menu_button.configure(state = 'normal')
 		self.master.master.maps_menu_button.configure(state = 'normal')
 
 	def Filter_callbck(self):

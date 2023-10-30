@@ -56,20 +56,19 @@ class App(ctk.CTk):
 		self.preprocess_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.edit_image, text='Prepocesar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Visualize data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('preprocess'))
 		self.preprocess_button.grid(row=2, column=0, sticky='new')
 
-		self.captures_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Lances' if settings['SETTINGS']['language'] == 'Spanish' else 'Captures', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('captures'))
-		self.captures_menu_button.grid(row=3, column=0, sticky='new')
-		self.species_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Especies' if settings['SETTINGS']['language'] == 'Spanish' else 'Species', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('species'))
-		self.species_menu_button.grid(row=4, column=0, sticky='new')
+		self.dashboard_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Dashboards' if settings['SETTINGS']['language'] == 'Spanish' else 'Captures', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('dashboard'))
+		self.dashboard_menu_button.grid(row=3, column=0, sticky='new')
+		
 		self.maps_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.map_image, text='Mapas' if settings['SETTINGS']['language'] == 'Spanish' else 'Maps', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('maps'))
-		self.maps_menu_button.grid(row=5, column=0, sticky='new')
+		self.maps_menu_button.grid(row=4, column=0, sticky='new')
 
 		self.appearance_mode_menu = ctk.CTkOptionMenu(self.navigation_frame, values=['System', 'Light', 'Dark'], command=self.change_appearance_mode_event)
 		self.appearance_mode_menu.set(settings['SETTINGS']['theme'])
-		self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky='s')
+		self.appearance_mode_menu.grid(row=5, column=0, padx=20, pady=20, sticky='s')
 
 		self.language_menu = ctk.CTkOptionMenu(self.navigation_frame, values=['Spanish', 'English'], command=self.change_language_event)
 		self.language_menu.set(settings['SETTINGS']['language'])
-		self.language_menu.grid(row=7, column=0, padx=20, pady=20, sticky='s')
+		self.language_menu.grid(row=6, column=0, padx=20, pady=20, sticky='s')
 
 		#Frame interactuable
 		self.interactFrame = ctk.CTkFrame(self, fg_color='transparent')
@@ -86,7 +85,7 @@ class App(ctk.CTk):
 	def show_menu(self):
 		widgets = [(self.navigation_frame_label, {'text': 'Menú', 'command': self.hide_menu}),
 			(self.upload_button, {'text': 'Cargar datos'}), (self.preprocess_button, {'text': 'Preprocesar datos'}),
-			(self.captures_menu_button, {'text': 'Lances'}), (self.species_menu_button, {'text': 'Especies'}), 
+			(self.dashboard_menu_button, {'text': 'Dashboards'}), 
 			(self.maps_menu_button, {'text': 'Mapas'})]
 		
 		for widget, config in widgets:
@@ -104,7 +103,7 @@ class App(ctk.CTk):
 
 	def hide_menu(self):
 		widgets_to_hide = [self.navigation_frame_label, self.upload_button, self.preprocess_button, 
-		    self.captures_menu_button, self.species_menu_button, self.maps_menu_button]
+		    self.dashboard_menu_button, self.maps_menu_button]
 
 		for widget in widgets_to_hide:
 			widget.configure(text = '', width = 5)
@@ -148,10 +147,9 @@ class App(ctk.CTk):
 	def select_frame_by_name(self, name):
 		try:
 			self.upload_button.configure(fg_color = ('gray75', 'gray25') if name == 'upload' else 'transparent')
-			self.preprocess_button.configure(fg_color = ('gray75', 'gray25') if name == 'visual' else 'transparent')
+			self.preprocess_button.configure(fg_color = ('gray75', 'gray25') if name == 'preprocess' else 'transparent')
 
-			self.captures_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'captures' else 'transparent')
-			self.species_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'species' else 'transparent')
+			self.dashboard_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'dashboard' else 'transparent')
 			self.maps_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'maps' else 'transparent')
 
 			# show selected frame
@@ -176,19 +174,16 @@ class App(ctk.CTk):
 			else:
 				if not self.uploadFrame.winfo_viewable():
 					self.uploadFrame.grid_forget()
-			if name == 'captures':
-				self.capturesFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+			if name == 'dashboard':
+				self.dashboardFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
 			else:
-				self.capturesFrame.grid_forget()
-			if name == 'species':
-				self.speciesFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-			else:
-				self.speciesFrame.grid_forget()
+				self.dashboardFrame.grid_forget()
 			if name == 'maps':
 				self.mapsFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
 			else:
 				self.mapsFrame.grid_forget()
-		except:
+		except Exception as e:
+			#print(e)
 			pass
     
 if __name__ == '__main__':

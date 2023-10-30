@@ -12,15 +12,11 @@ class TableWidget(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         self.originaldataframe = dataframe
         self.dataframe = dataframe
-        self.searchFrame = ctk.CTkFrame(self, fg_color = 'transparent')
-        self.searchFrame.grid(row = 0, column = 0, sticky = 'ew', padx = 10, pady = (8, 0))
-        self.searchFrame.grid_rowconfigure(0, weight = 1)
-        self.searchFrame.grid_columnconfigure(0, weight = 1)
         self.numrow = 20
         self.checks = self.originaldataframe.keys()
         
-        self.configButton = ctk.CTkButton(self.searchFrame, text = '', image=config_image, width = 20, height = 20, command = self.open_config)
-        self.configButton.grid(row = 0, column = 0, sticky = 'e')
+        self.configButton = ctk.CTkButton(self, text = '', image=config_image, width = 20, height = 20, command = self.open_config)
+        self.configButton.grid(row = 0, column = 0, sticky = 'e', padx = 8, pady = (8, 0))
         self.config_window = None
         self.scrollFrame = CTkXYFrame(self, fg_color = 'transparent')
         self.scrollFrame.grid(row = 1, column = 0, sticky = 'nswe', pady = (2, 0))

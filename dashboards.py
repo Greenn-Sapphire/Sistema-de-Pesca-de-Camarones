@@ -31,17 +31,23 @@ class dashboards(ctk.CTkFrame):
 		self.button = ctk.CTkButton(self, text = 'Aplicar filtros', command = self.Filter_callbck)
 		self.button.grid(row = 1, column = 0, sticky = 'ew', padx = 8, pady = (2, 8))
 
-		self.dashboard_captures_frame = ctk.CTkScrollableFrame(self)
-		self.dashboard_captures_frame.grid(row = 0, column = 1, rowspan = 1, sticky = 'nsew', padx = 8, pady = 8)
+		self.tabs = ctk.CTkTabview(self)
+		self.tabs.add('Lances')
+		self.tabs.add('Especies')
+		self.tabs.set('Lances')
+		self.tabs.grid(row = 0, column = 1, rowspan = 2, sticky = 'nsew', padx = 8, pady = 8)
 
-		self.dashboard_species_frame = ctk.CTkScrollableFrame(self)
-		self.dashboard_species_frame.grid(row = 1, column = 1, rowspan = 1, sticky = 'nsew', padx = 8, pady = 8)
+		self.dashboard_captures_frame = ctk.CTkScrollableFrame(self.tabs.tab('Lances'))
+		self.dashboard_captures_frame.pack(fill='both', expand=True)
+
+		self.dashboard_species_frame = ctk.CTkScrollableFrame(self.tabs.tab('Especies'))
+		self.dashboard_species_frame.pack(fill='both', expand=True)
 
 		fig_captures = self.createPlots(self.dataframe)
 		
 		self.canvas_captures = FigureCanvasTkAgg(fig_captures, master = self.dashboard_captures_frame)
 		self.canvas_captures.draw()
-		self.canvas_captures.get_tk_widget().configure(bg = 'lightgray', highlightthickness = 0)
+		self.canvas_captures.get_tk_widget().configure(highlightthickness = 0)
 		self.canvas_captures.get_tk_widget().pack()
 		
 		toolbar = NavigationToolbar2Tk(self.canvas_captures, self.dashboard_captures_frame)
@@ -52,7 +58,7 @@ class dashboards(ctk.CTkFrame):
 		
 		self.canvas_species = FigureCanvasTkAgg(fig_species, master = self.dashboard_species_frame)
 		self.canvas_species.draw()
-		self.canvas_species.get_tk_widget().configure(bg = 'lightgray', highlightthickness = 0)
+		self.canvas_species.get_tk_widget().configure(highlightthickness = 0)
 		self.canvas_species.get_tk_widget().pack()
 		
 		toolbar2 = NavigationToolbar2Tk(self.canvas_species, self.dashboard_species_frame)
@@ -66,7 +72,7 @@ class dashboards(ctk.CTkFrame):
 		conteo_especies = df['ESPECIE'].value_counts()
 		conteo_especies_top20 = conteo_especies.head(20)
 		axs[0].grid(True, linestyle = '--', alpha = 0.5)
-		sns.barplot(x=conteo_especies_top20.values, y=conteo_especies_top20.index, ax = axs[0])
+		sns.barplot(x=conteo_especies_top20.values, y=conteo_especies_top20.index, ax = axs[0], color = 'royalblue')
 
 		# Agregar etiquetas y título
 		axs[0].set_title('Conteo de las primeras 20 especies más capturadas', fontsize = 10)
@@ -78,7 +84,7 @@ class dashboards(ctk.CTkFrame):
 
 		conteo_grupos = df['GRUPO'].value_counts()
 		axs[1].grid(True, linestyle = '--', alpha = 0.5)
-		sns.barplot(x=conteo_grupos.values, y=conteo_grupos.index, ax = axs[1])
+		sns.barplot(x=conteo_grupos.values, y=conteo_grupos.index, ax = axs[1], color = 'royalblue')
 
 		# Agregar etiquetas y título
 		axs[1].set_title('Cantidad de individuos por grupo', fontsize = 10)
@@ -90,8 +96,8 @@ class dashboards(ctk.CTkFrame):
 		
 		data_grouped = df.groupby('PROF/m').agg({'Camaron/kg': 'sum', 'FAC/kg': 'sum'}).reset_index()
 		axs[2].grid(True, linestyle = '--', alpha = 0.5)
-		sns.barplot(x='PROF/m', y='FAC/kg', data=data_grouped, color='orange', label='FAC/kg', ax = axs[2])
-		sns.barplot(x='PROF/m', y='Camaron/kg', data=data_grouped, color='blue', label='Camaron/kg', ax = axs[2])
+		sns.barplot(x='PROF/m', y='FAC/kg', data=data_grouped, color='royalblue', label='FAC/kg', ax = axs[2])
+		sns.barplot(x='PROF/m', y='Camaron/kg', data=data_grouped, color='lightpink', label='Camaron/kg', ax = axs[2])
 
 		#Agregar leyendas y etiquetas
 		axs[2].set_title('KG de camarón y FAC capturado por profundidad', fontsize = 10)
@@ -109,15 +115,17 @@ class dashboards(ctk.CTkFrame):
 		df_resampled.set_index('FECHA', inplace=True)
 		df_resampled = df_resampled.resample('D')['ESPECIE'].count()
 		axs[3].grid(True, linestyle = '--', alpha = 0.5)
-		sns.lineplot(x=df_resampled.index, y=df_resampled.values, data=df_resampled, ax = axs[3])
+		sns.lineplot(x=df_resampled.index, y=df_resampled.values, data=df_resampled, ax = axs[3], color = 'royalblue')
+		unique_dates = df_resampled.index
 
 		# Agregar etiquetas y título
-		axs[3].set_title('Total de especies capturadas por día', fontsize = 10)
+		axs[3].set_title('Total de individuos capturadas por día', fontsize = 10)
 		axs[3].set_xlabel('')
 		axs[3].set_ylabel('')
 		axs[3].tick_params(axis = 'x', labelsize = 8)
 		axs[3].tick_params(axis = 'y', labelsize = 8)
-		axs[3].set_xticks(axs[3].get_xticks())
+		axs[3].set_xticks(unique_dates)
+		axs[3].set_xticklabels([date.strftime('%d/%m/%Y') for date in unique_dates], rotation=90, ha='right')
 
 		plt.tight_layout()
 
@@ -159,27 +167,28 @@ class dashboards(ctk.CTkFrame):
 			fig_captures = self.createPlots(df_list)
 			fig_species = self.createPlots2(df_list)
 			
-			self.dashboard_captures_frame.destroy()
-			self.dashboard_captures_frame = ctk.CTkScrollableFrame(self)
-			self.dashboard_captures_frame.grid(row = 0, column = 1, rowspan = 1, sticky = 'nsew', padx = 8, pady = 8)
+			self.tabs.delete('Lances')
+			self.tabs.add('Lances')
+			self.dashboard_captures_frame = ctk.CTkScrollableFrame(self.tabs.tab('Lances'))
+			self.dashboard_captures_frame.pack(fill='both', expand=True)
 
 			self.canvas_captures = FigureCanvasTkAgg(fig_captures, master = self.dashboard_captures_frame)
 			self.canvas_captures.draw()
-			self.canvas_captures.get_tk_widget().configure(bg = 'lightgray', highlightthickness = 0)
+			self.canvas_captures.get_tk_widget().configure(highlightthickness = 0)
 			self.canvas_captures.get_tk_widget().pack()
 
 			toolbar = NavigationToolbar2Tk(self.canvas_captures, self.dashboard_captures_frame)
 			toolbar.update()
 			toolbar.pack()
 			
-
-			self.dashboard_species_frame.destroy()
-			self.dashboard_species_frame = ctk.CTkScrollableFrame(self)
-			self.dashboard_species_frame.grid(row = 1, column = 1, rowspan = 1, sticky = 'nsew', padx = 8, pady = 8)
+			self.tabs.delete('Especies')
+			self.tabs.add('Especies')
+			self.dashboard_species_frame = ctk.CTkScrollableFrame(self.tabs.tab('Especies'))
+			self.dashboard_species_frame.pack(fill='both', expand=True)
 
 			self.canvas_species = FigureCanvasTkAgg(fig_species, master = self.dashboard_species_frame)
 			self.canvas_species.draw()
-			self.canvas_species.get_tk_widget().configure(bg = 'lightgray', highlightthickness = 0)
+			self.canvas_species.get_tk_widget().configure(highlightthickness = 0)
 			self.canvas_species.get_tk_widget().pack()
 
 			toolbar2 = NavigationToolbar2Tk(self.canvas_species, self.dashboard_species_frame)

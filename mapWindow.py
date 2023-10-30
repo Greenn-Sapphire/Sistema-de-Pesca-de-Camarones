@@ -11,6 +11,7 @@ class maps(ctk.CTkFrame):
 		self.grid_remove()
 		self.grid_columnconfigure(1, weight = 1) #Darle todo el espacio restante a la Tabla
 		self.grid_rowconfigure(0, weight = 1) #Darle todo el espacio restante al ScrollableFrame
+		self.grid_configure()
 		self.dataframe = dataframe
 		self.marker_list = []
 		
@@ -28,8 +29,17 @@ class maps(ctk.CTkFrame):
 		self.Button = ctk.CTkButton(self, text = 'Aplicar filtros', command = self.Filter_callbck)
 		self.Button.grid(row = 1, column = 0, sticky = 'ew', padx = 8, pady = (2, 8))
 
-		self.map_widget = tkintermapview.TkinterMapView(self, corner_radius = 5)
-		self.map_widget.grid(row = 0, column = 1, rowspan = 2, sticky = 'nswe', padx = 8, pady = 8)
+		self.container = ctk.CTkFrame(self)
+		self.container.grid(row = 0, column = 1, rowspan = 2, sticky = 'nswe', padx = 8, pady = 8)
+		self.container.grid_columnconfigure(0, weight = 1)
+		self.container.grid_rowconfigure(1, weight = 1)
+
+		self.region_selector = ctk.CTkOptionMenu(self.container, values = ['Baja California Sur', 'Golfo de Tehuantepec', 'Islas Contoy'], width = 180, command=self.change_region_event)
+		self.region_selector.grid(row = 0, column = 0, sticky = 'e', padx = 8, pady = (8, 0))
+
+		self.map_widget = tkintermapview.TkinterMapView(self.container, corner_radius = 5)
+		self.map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
+		self.map_widget.grid(row = 1, column = 0, sticky = 'nswe', padx = 8, pady = (2, 8))
 
 		self.map_widget.set_position(15.8083695, -94.1006715)  # Golfo Tehuantepec
 		self.map_widget.set_zoom(9)
@@ -42,6 +52,14 @@ class maps(ctk.CTkFrame):
 		unique_coordinates_df['LONG_INI'] = self.dms_to_dd(unique_coordinates_df['LONG_INI'])*-1
 		unique_coordinates_df['LONG_FIN'] = self.dms_to_dd(unique_coordinates_df['LONG_FIN'])*-1
 		self.create_markers(unique_coordinates_df)
+
+	def change_region_event(self, region):
+		if region == 'Golfo de Tehuantepec':
+			self.map_widget.set_position(16.004032949759438, -94.99997078781678)
+		elif region == 'Islas Contoy':
+			self.map_widget.set_position(21.49335742259156, -86.80067298449022)
+		elif region == 'Baja California Sur':
+			self.map_widget.set_position(25.9420633164181, -112.8625387474789)
 
 	def dms_to_dd(self, coordenada):
 			#Si es Norte y Este se suma, de lo contrario se resta
