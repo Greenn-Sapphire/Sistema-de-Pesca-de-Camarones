@@ -1,10 +1,14 @@
 import customtkinter as ctk
 import configparser
-import os
 
+from CTkMessagebox import CTkMessagebox
+from Widgets.lateralmenu import lateralmenu
+from preprocessWindow import preprocess
+from dashboards import dashboards
 from uploadWindow import upload
+from mapWindow import maps
+from CTkTable import *
 from Archivos import *
-from PIL import Image
 
 #<a href="https://www.flaticon.com/free-icons/align" title="align icons">Align icons created by Freepik - Flaticon</a>
 #<a href="https://www.flaticon.com/free-icons/seo-full" title="seo full icons">Seo full icons created by Freepik - Flaticon</a>
@@ -14,20 +18,7 @@ from PIL import Image
 class App(ctk.CTk):
 	def __init__(self):
 		super().__init__()
-		settings = self.readConfig()
-
-		image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Archivos')
-		self.menu_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_menu.png')),
-													dark_image=Image.open(os.path.join(image_path, 'light_menu.png')), size=(20, 20))
-		self.upload_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_upload.png')),
-													dark_image=Image.open(os.path.join(image_path, 'light_upload.png')), size=(20, 20))
-		self.edit_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_edit.png')),
-													dark_image=Image.open(os.path.join(image_path, 'light_edit.png')), size=(20, 20))
-		self.graph_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_graph.png')),
-													dark_image=Image.open(os.path.join(image_path, 'light_graph.png')), size=(20, 20))
-		self.map_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_map.png')),
-														dark_image=Image.open(os.path.join(image_path, 'light_map.png')), size=(20, 20))
-
+		settings = self.read_config_file()
 		ctk.set_appearance_mode(settings['SETTINGS']['theme'])
 		self.title('Sistema de Pesca de Camarones')
 		self.iconbitmap('Archivos/shrimp.ico')
@@ -36,156 +27,121 @@ class App(ctk.CTk):
 		self.grid_columnconfigure(1, weight=1)
 		self.grid_rowconfigure(0, weight=1)
 
-		#Barra de navegación
-		self.navigation_frame = ctk.CTkFrame(self, corner_radius=0)
-		#Posicionar elemento sobre el elemento padre en la fila 0 y columna 0
-		#"sticky" indica de lado debe pegarse el objeto y como distribuir el espacio adicional que no ocupe el objeto
-		#en este caso se pegará norte a sur 'ns', para este a oeste es 'ew'
-		#https://www.pythontutorial.net/tkinter/tkinter-grid/
-		self.navigation_frame.grid(row=0, column=0, sticky='ns')
-		#Ya entendí como funciona, aquí se define el espacio que ocupara la fila 5, no el definir el número de columnas
-		self.navigation_frame.grid_rowconfigure(5, weight=1)
-		#Lo mismo aquí se define la cantidad de espacio que ocupara la columna 0
-		self.navigation_frame.grid_columnconfigure(0, weight=1)
-
-		self.navigation_frame_label = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.menu_image, compound='left', text='Menú', font=ctk.CTkFont(size=15, weight='bold'), fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='we', command=self.hide_menu)
-		self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
-
-		self.upload_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.upload_image, text='Cargar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Load data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w')
-		self.upload_button.grid(row=1, column=0, sticky='new')
-		self.preprocess_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, image=self.edit_image, text='Prepocesar datos' if settings['SETTINGS']['language'] == 'Spanish' else 'Visualize data', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('preprocess'))
-		self.preprocess_button.grid(row=2, column=0, sticky='new')
-
-		self.dashboard_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.graph_image, text='Dashboards' if settings['SETTINGS']['language'] == 'Spanish' else 'Captures', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('dashboard'))
-		self.dashboard_menu_button.grid(row=3, column=0, sticky='new')
-		
-		self.maps_menu_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10,image=self.map_image, text='Mapas' if settings['SETTINGS']['language'] == 'Spanish' else 'Maps', fg_color='transparent', text_color=('gray10', 'gray90'), hover_color=('gray70', 'gray30'), anchor='w', state = 'disabled', command=lambda: self.select_frame_by_name('maps'))
-		self.maps_menu_button.grid(row=4, column=0, sticky='new')
-
-		self.appearance_mode_menu = ctk.CTkOptionMenu(self.navigation_frame, values=['System', 'Light', 'Dark'], command=self.change_appearance_mode_event)
-		self.appearance_mode_menu.set(settings['SETTINGS']['theme'])
-		self.appearance_mode_menu.grid(row=5, column=0, padx=20, pady=20, sticky='s')
-
-		self.language_menu = ctk.CTkOptionMenu(self.navigation_frame, values=['Spanish', 'English'], command=self.change_language_event)
-		self.language_menu.set(settings['SETTINGS']['language'])
-		self.language_menu.grid(row=6, column=0, padx=20, pady=20, sticky='s')
+		self.lateral_menu = lateralmenu(self)
+		self.lateral_menu.grid(row=0, column=0, sticky='ns')
 
 		#Frame interactuable
-		self.interactFrame = ctk.CTkFrame(self, fg_color='transparent')
-		self.interactFrame.grid(row=0, column=1, sticky='nswe', padx=4, pady=4)
-		self.interactFrame.grid_rowconfigure(0, weight=1)
-		self.interactFrame.grid_columnconfigure(0, weight=1)
+		self.main_frame = ctk.CTkFrame(self, fg_color='transparent', corner_radius = 0)
+		self.main_frame.grid(row=0, column=1, sticky='nswe')
+		self.main_frame.grid_rowconfigure(0, weight=1)
+		self.main_frame.grid_columnconfigure(1, weight=1)
 
 		#Referenciar las 'ventanas' para mandarlas a llamarlas con la función select_frame_by_name
-		self.uploadFrame = upload(self.interactFrame)
+		self.upload_frame = upload(self.main_frame, corner_radius = 5)
+		self.upload_frame.grid(row=0, column=0, sticky='ns', padx = 0)
+		self.upload_frame.upload_button.configure(command = self.read_data)
 
 		#Llamada a la ventana upload
 		self.select_frame_by_name('upload')
 
-	def show_menu(self):
-		widgets = [(self.navigation_frame_label, {'text': 'Menú', 'command': self.hide_menu}),
-			(self.upload_button, {'text': 'Cargar datos'}), (self.preprocess_button, {'text': 'Preprocesar datos'}),
-			(self.dashboard_menu_button, {'text': 'Dashboards'}), 
-			(self.maps_menu_button, {'text': 'Mapas'})]
-		
-		for widget, config in widgets:
-			widget.configure(**config)
-			widget.grid(sticky = 'we')
-
-			if widget is self.navigation_frame_label:
-				widget.grid(sticky = 'we', padx = 20)
-
-			if widget is self.maps_menu_button:
-				widget.grid(sticky = 'nwe')
-
-		self.appearance_mode_menu.grid()
-		self.language_menu.grid()
-
-	def hide_menu(self):
-		widgets_to_hide = [self.navigation_frame_label, self.upload_button, self.preprocess_button, 
-		    self.dashboard_menu_button, self.maps_menu_button]
-
-		for widget in widgets_to_hide:
-			widget.configure(text = '', width = 5)
-			widget.grid(sticky = 'w')
-
-			if widget is self.navigation_frame_label:
-				widget.configure(text = '', command = self.show_menu, width = 5)
-				widget.grid(sticky = 'w', padx = 0)
-
-			if widget is self.maps_menu_button:
-				widget.grid(sticky = 'nw')
-		
-		self.appearance_mode_menu.grid_remove()
-		self.language_menu.grid_remove()
-
-	#Cuando se usa el atributo commad desde un objeto CTkOptionMenu este siempre arrojara dos valores que son:
-	#'self' - Que hace referencia al propio elemento del que viene la interracion
-	#'value' o en este caso 'new_appearance_mode' que es uno de los posibles valores que definimos en el objeto
-	def change_appearance_mode_event(self, new_appearance_mode):
-		self.changeConfig('theme', new_appearance_mode)
-		ctk.set_appearance_mode(new_appearance_mode)
-
-	def change_language_event(self, new_language):
-		self.changeConfig('language', new_language)
-
-	#Funcion que leera el archivo config.ini
-	def readConfig(self):
+	def read_config_file(self):
 		settings = configparser.ConfigParser()
 		settings.read('config.ini')
 		return settings
-
-	#Funcion para escribir sobre el archivo config.ini
-	def changeConfig(self, setting, value):
-		settings = self.readConfig()
-		settings['SETTINGS'][setting] = value
-		
-		with open('config.ini', 'w') as configfile:
-			settings.write(configfile)
-
+	
 	#Funcion para cambiar entre frames principales
 	def select_frame_by_name(self, name):
 		try:
-			self.upload_button.configure(fg_color = ('gray75', 'gray25') if name == 'upload' else 'transparent')
-			self.preprocess_button.configure(fg_color = ('gray75', 'gray25') if name == 'preprocess' else 'transparent')
+			self.lateral_menu.upload_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'upload' else 'transparent')
+			self.lateral_menu.preprocess_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'preprocess' else 'transparent')
 
-			self.dashboard_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'dashboard' else 'transparent')
-			self.maps_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'maps' else 'transparent')
+			self.lateral_menu.dashboard_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'dashboard' else 'transparent')
+			self.lateral_menu.maps_menu_button.configure(fg_color = ('gray75', 'gray25') if name == 'maps' else 'transparent')
 
 			# show selected frame
 			if name == 'upload':
-				self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-				self.uploadFrame.filterFrame.grid_forget()
-				self.uploadFrame.filterbutton.grid_forget()
-				self.uploadFrame.preprocessbutton.grid_forget()
-				self.uploadFrame.infoWidget.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
-				self.uploadFrame.uploadbutton.grid(row = 1, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+				self.upload_frame.grid(row = 0, column = 0, sticky = 'nse', padx = 10, pady = 10)
+				self.table_frame.grid(row=0, column=1, sticky='nswe', padx = 2, pady = 10)
 			else:
-				if not self.uploadFrame.winfo_viewable():
-					self.uploadFrame.grid_forget()
+				self.upload_frame.grid_forget()
+
 			if name == 'preprocess':
-				self.uploadFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
-				self.uploadFrame.infoWidget.grid_forget()
-				self.uploadFrame.uploadbutton.grid_forget()
-				self.uploadFrame.filterFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
-				self.uploadFrame.filterbutton.grid(row = 2, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
-				self.uploadFrame.preprocessbutton.grid(row = 3, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
-				#self.preprocessFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+				self.preprocess_frame.grid(row = 0, column = 0, sticky = 'nse', padx = 10, pady = 10)
+				self.preprocess_frame.preprocess_button.grid(row = 3, column = 0, sticky = 'sew', padx = 8, pady = (2, 8))
+				self.table_frame.grid(row=0, column=1, sticky='nswe', padx = 2, pady = 10)
 			else:
-				if not self.uploadFrame.winfo_viewable():
-					self.uploadFrame.grid_forget()
-			if name == 'dashboard':
-				self.dashboardFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+				self.preprocess_frame.grid_forget()
+
+			if name == 'dashboards':
+				self.table_frame.grid_forget()
+				self.preprocess_frame.grid(row = 0, column = 0, sticky = 'nse', padx = 10, pady = 10)
+				self.preprocess_frame.preprocess_button.grid_forget()
+				self.dashboard_frame.grid(row = 0, column = 1, sticky = 'nswe', padx = 2, pady = 10)
 			else:
-				self.dashboardFrame.grid_forget()
+				self.dashboard_frame.grid_forget()
+
 			if name == 'maps':
-				self.mapsFrame.grid(row = 0, column = 0, sticky = 'nswe', padx = 10, pady = 10)
+				self.table_frame.grid_forget()
+				self.preprocess_frame.grid(row = 0, column = 0, sticky = 'nse', padx = 10, pady = 10)
+				self.preprocess_frame.preprocess_button.grid_forget()
+				self.maps_frame.grid(row = 0, column = 1, sticky = 'nswe', padx = 2, pady = 10)
 			else:
-				self.mapsFrame.grid_forget()
+				self.maps_frame.grid_forget()
 		except Exception as e:
 			#print(e)
 			pass
-    
+
+	def read_data(self):
+		self.dataframe = self.upload_frame.readData()
+		if not self.dataframe.empty:
+			self.upload_frame.data_information_frame.showinfo(self.dataframe)
+			self.table_frame = self.upload_frame.createTable(self.main_frame, self.dataframe)
+			self.table_frame.grid(row=0, column=1, sticky='nswe', padx = 2, pady = 10)
+
+			self.preprocess_frame = preprocess(self.main_frame, self.dataframe)
+			self.preprocess_frame.filter_button.configure(command = self.filter_data)
+			self.preprocess_frame.preprocess_button.configure(command = self.process_data)
+			self.lateral_menu.upload_menu_button.configure(command = lambda: self.select_frame_by_name('upload'))
+			self.lateral_menu.preprocess_menu_button.configure(command = lambda: self.select_frame_by_name('preprocess'))
+			self.lateral_menu.preprocess_menu_button.configure(state = 'normal')
+
+	def filter_data(self):
+		if self.table_frame.winfo_viewable():
+			try:
+				self.table_frame.table.destroy()
+				df_list = self.preprocess_frame.data_filter_frame.apply_filter()
+				
+				self.table_frame.table = CTkTable(self.table_frame.scrollable_table_frame, row = self.table_frame.numrow + 1, hover_color = '#778899', values = df_list, command = self.table_frame.UpdateData)
+				self.table_frame.table.grid(row = 0, column = 0)
+				CTkMessagebox(title = 'Aviso', message = 'Datos filtrados (temporalmente)', icon = 'check')
+			except Exception as e:
+				CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}', icon = 'warning')
+				return
+			
+		elif self.dashboard_frame.winfo_viewable():
+			df_list = self.preprocess_frame.data_filter_frame.apply_filter_graphs()
+			self.dashboard_frame.filter_dashboard_data(df_list)
+
+		elif self.maps_frame.winfo_viewable():
+			df_list = self.preprocess_frame.data_filter_frame.apply_filter_graphs()
+			self.maps_frame.filter_map_data(df_list)
+
+	def process_data(self):
+		try:
+			self.preprocess_frame.preprocess_data(self.dataframe)
+			self.dashboard_frame = dashboards(self.main_frame, self.dataframe)
+			self.lateral_menu.dashboard_menu_button.configure(command = lambda: self.select_frame_by_name('dashboards'))
+			self.lateral_menu.dashboard_menu_button.configure(state = 'normal')
+
+			self.maps_frame = maps(self.main_frame, self.dataframe)
+			self.lateral_menu.maps_menu_button.configure(command = lambda: self.select_frame_by_name('maps'))
+			self.lateral_menu.maps_menu_button.configure(state = 'normal')
+
+			CTkMessagebox(title = 'Aviso', message = 'Datos procesados con éxito', icon = 'check')
+		except  Exception as e:
+			print(e)
+			pass
+
 if __name__ == '__main__':
     app = App()
     app.protocol('WM_DELETE_WINDOW', app.quit)

@@ -15,13 +15,13 @@ class TableWidget(ctk.CTkFrame):
         self.numrow = 20
         self.checks = self.originaldataframe.keys()
         
-        self.configButton = ctk.CTkButton(self, text = '', image=config_image, width = 20, height = 20, command = self.open_config)
-        self.configButton.grid(row = 0, column = 0, sticky = 'e', padx = 8, pady = (8, 0))
+        self.table_config_button = ctk.CTkButton(self, text = '', image=config_image, width = 20, height = 20, command = self.open_config)
+        self.table_config_button.grid(row = 0, column = 0, sticky = 'e', padx = 8, pady = (8, 0))
         self.config_window = None
-        self.scrollFrame = CTkXYFrame(self, fg_color = 'transparent')
-        self.scrollFrame.grid(row = 1, column = 0, sticky = 'nswe', pady = (2, 0))
+        self.scrollable_table_frame = CTkXYFrame(self, fg_color = 'transparent')
+        self.scrollable_table_frame.grid(row = 1, column = 0, sticky = 'nswe', pady = (2, 0))
 
-        self.table = CTkTable(self.scrollFrame, row = 21, hover_color = '#778899', values = df_list, command = self.UpdateData)
+        self.table = CTkTable(self.scrollable_table_frame, row = 21, hover_color = '#778899', values = df_list, command = self.UpdateData)
         self.table.grid(row = 0, column = 0)
 
     def open_config(self):

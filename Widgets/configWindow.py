@@ -59,7 +59,7 @@ class ToplevelWindow(ctk.CTkToplevel):
 
         self.master.table.grid_forget()
         self.master.table.destroy()
-        self.master.table = CTkTable(self.master.scrollFrame, row = self.rowsnum, hover_color = '#778899', values = df_list, command = self.master.UpdateData)
+        self.master.table = CTkTable(self.master.scrollable_table_frame, row = self.rowsnum, hover_color = '#778899', values = df_list, command = self.master.UpdateData)
         self.master.table.grid(row = 0, column = 0)
     
     def getdataframe(self):

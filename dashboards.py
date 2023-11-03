@@ -4,62 +4,44 @@ import seaborn as sns
 import pandas as pd
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from Widgets.filterpanel import FilterPanel
 from CTkMessagebox import CTkMessagebox
 
 class dashboards(ctk.CTkFrame):
 	def __init__(self, master, dataframe):
 		super().__init__(master)
-		self.grid_remove()
-		self.grid(sticky= 'nswe')
 		self.grid_columnconfigure(1, weight = 1)
 		self.grid_rowconfigure(0, weight = 1)
-		self.dataframe = dataframe		
+		self.dataframe = dataframe
 		
-		nonfilterlist = ['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI', 'Hr_INI', 'Hr_FIN', 'Nºind/Tot', 'Nºind/mes', 'Nºind/est', 
-				   'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CODIGOSPP', 'CLAVE_SP', 'DIAME_DISCO', 'PESO', 'WA', 'OBSERV']
-                    #['LAT_INI', 'LONG_INI', 'LAT_FIN', 'LONG_FIN', 'LAT_INI', 'Hr_INI', 'Hr_FIN', 
-				    #'Nºind/Tot', 'Nºind/mes', 'Nºind/est', 'LONG_TOT', 'LONG_PAT', 'DIAME_DISCO', 'PESO', 'WA',
-				    #'CLAV_GRUP', 'CLA_ORDEN', 'CLAVE_FAM', 'CODIGOSPP', 'CLAVE_SP', 'OBSERV']
-
-		self.filterFrame = FilterPanel(self, self.dataframe, nonfilterlist, width = 150)
-		self.filterFrame.configure(corner_radius = 5)
-		self.filterFrame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
-		self.filterFrame.grid_rowconfigure(8, weight = 1)
-		self.filterFrame.grid_columnconfigure(0, weight = 1)
-		
-		self.button = ctk.CTkButton(self, text = 'Aplicar filtros', command = self.Filter_callbck)
-		self.button.grid(row = 1, column = 0, sticky = 'ew', padx = 8, pady = (2, 8))
-
 		self.tabs = ctk.CTkTabview(self)
 		self.tabs.add('Lances')
 		self.tabs.add('Especies')
 		self.tabs.set('Lances')
 		self.tabs.grid(row = 0, column = 1, rowspan = 2, sticky = 'nsew', padx = 8, pady = 8)
 
-		self.dashboard_captures_frame = ctk.CTkScrollableFrame(self.tabs.tab('Lances'))
+		self.dashboard_captures_frame = ctk.CTkScrollableFrame(self.tabs.tab('Lances'), fg_color='transparent')
 		self.dashboard_captures_frame.pack(fill='both', expand=True)
 
-		self.dashboard_species_frame = ctk.CTkScrollableFrame(self.tabs.tab('Especies'))
+		self.dashboard_species_frame = ctk.CTkScrollableFrame(self.tabs.tab('Especies'), fg_color='transparent')
 		self.dashboard_species_frame.pack(fill='both', expand=True)
 
-		fig_captures = self.createPlots(self.dataframe)
+		self.fig_captures = self.createPlots(self.dataframe)
 		
-		self.canvas_captures = FigureCanvasTkAgg(fig_captures, master = self.dashboard_captures_frame)
+		self.canvas_captures = FigureCanvasTkAgg(self.fig_captures, master = self.dashboard_captures_frame)
 		self.canvas_captures.draw()
 		self.canvas_captures.get_tk_widget().configure(highlightthickness = 0)
-		self.canvas_captures.get_tk_widget().pack()
+		self.canvas_captures.get_tk_widget().pack(fill='both', expand=True)
 		
 		toolbar = NavigationToolbar2Tk(self.canvas_captures, self.dashboard_captures_frame)
 		toolbar.update()
 		toolbar.pack()
 		
-		fig_species = self.createPlots2(self.dataframe)
+		self.fig_species = self.createPlots2(self.dataframe)
 		
-		self.canvas_species = FigureCanvasTkAgg(fig_species, master = self.dashboard_species_frame)
+		self.canvas_species = FigureCanvasTkAgg(self.fig_species, master = self.dashboard_species_frame)
 		self.canvas_species.draw()
 		self.canvas_species.get_tk_widget().configure(highlightthickness = 0)
-		self.canvas_species.get_tk_widget().pack()
+		self.canvas_species.get_tk_widget().pack(fill='both', expand=True)
 		
 		toolbar2 = NavigationToolbar2Tk(self.canvas_species, self.dashboard_species_frame)
 		toolbar2.update()
@@ -161,21 +143,20 @@ class dashboards(ctk.CTkFrame):
 
 		return fig
 	
-	def Filter_callbck(self):
+	def filter_dashboard_data(self, df_list):
 		try:
-			df_list = self.filterFrame.apply_filter_graphs()
-			fig_captures = self.createPlots(df_list)
-			fig_species = self.createPlots2(df_list)
+			self.fig_captures = self.createPlots(df_list)
+			self.fig_species = self.createPlots2(df_list)
 			
 			self.tabs.delete('Lances')
 			self.tabs.add('Lances')
 			self.dashboard_captures_frame = ctk.CTkScrollableFrame(self.tabs.tab('Lances'))
 			self.dashboard_captures_frame.pack(fill='both', expand=True)
 
-			self.canvas_captures = FigureCanvasTkAgg(fig_captures, master = self.dashboard_captures_frame)
+			self.canvas_captures = FigureCanvasTkAgg(self.fig_captures, master = self.dashboard_captures_frame)
 			self.canvas_captures.draw()
 			self.canvas_captures.get_tk_widget().configure(highlightthickness = 0)
-			self.canvas_captures.get_tk_widget().pack()
+			self.canvas_captures.get_tk_widget().pack(fill='both', expand=True)
 
 			toolbar = NavigationToolbar2Tk(self.canvas_captures, self.dashboard_captures_frame)
 			toolbar.update()
@@ -186,16 +167,15 @@ class dashboards(ctk.CTkFrame):
 			self.dashboard_species_frame = ctk.CTkScrollableFrame(self.tabs.tab('Especies'))
 			self.dashboard_species_frame.pack(fill='both', expand=True)
 
-			self.canvas_species = FigureCanvasTkAgg(fig_species, master = self.dashboard_species_frame)
+			self.canvas_species = FigureCanvasTkAgg(self.fig_species, master = self.dashboard_species_frame)
 			self.canvas_species.draw()
 			self.canvas_species.get_tk_widget().configure(highlightthickness = 0)
-			self.canvas_species.get_tk_widget().pack()
+			self.canvas_species.get_tk_widget().pack(fill='both', expand=True)
 
 			toolbar2 = NavigationToolbar2Tk(self.canvas_species, self.dashboard_species_frame)
 			toolbar2.update()
 			toolbar2.pack()
 			
-			#self.dashboard_species_frame.grid(row = 0, column = 1, rowspan = 2, sticky = 'nsew', padx = 8, pady = 8)
 		except Exception as e:
 			CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}', icon = 'warning')
 			return

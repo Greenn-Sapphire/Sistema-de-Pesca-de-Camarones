@@ -3,11 +3,20 @@ import customtkinter as ctk
 class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, item_list, command=None, **kwargs):
         super().__init__(master, **kwargs)
-
         self.command = command
         self.checkbox_list = []
-        for i, item in enumerate(item_list):
-            self.add_item(item)
+
+        if len(item_list) > 50:
+            min_num_items = len(item_list) // 4
+            first_sublist = item_list[:min_num_items]  # Obtiene la primera sublista con el 25% de los elementos
+            rest_sublists = [item_list[i:i + min_num_items] for i in range(min_num_items, len(item_list), min_num_items)]
+            
+            for item in first_sublist:
+                self.add_item(item)
+
+        else:
+            for item in item_list:
+                self.add_item(item)
 
     def add_item(self, item):
         checkbox = ctk.CTkCheckBox(self, text=item)
@@ -39,7 +48,7 @@ class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
     def set_checked(self, item):
         # Marca el checkbox correspondiente al elemento proporcionado como seleccionado
         for checkbox in self.checkbox_list:
-            if checkbox.cget('text') == item:
+            if str(checkbox.cget('text')).strip().lower() == str(item).strip().lower():
                 checkbox.select()
 
     def set_all_checked(self):
