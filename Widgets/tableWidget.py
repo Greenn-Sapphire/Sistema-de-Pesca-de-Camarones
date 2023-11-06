@@ -30,7 +30,7 @@ class TableWidget(ctk.CTkFrame):
         else:
             self.config_window.focus()  # if window exists focus it
 
-    def UpdateData(self, data):					
+    def UpdateData(self, data):
         msn = 'Introduce un nuevo valor\n{}\n\nFila: {}\tColumna: {}'.format(data['value'], data['row'], data['column'])
         dialog = ctk.CTkInputDialog(text = msn, title = 'Modificar valor')
 

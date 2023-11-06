@@ -1,23 +1,33 @@
 import customtkinter as ctk
 
 class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
-    def __init__(self, master, item_list, command=None, **kwargs):
+    def __init__(self, master, item_list, row_index, command=None, **kwargs):
         super().__init__(master, **kwargs)
         self.command = command
         self.checkbox_list = []
+        self.row_index = row_index
 
         if len(item_list) > 50:
             min_num_items = len(item_list) // 4
             first_sublist = item_list[:min_num_items]  # Obtiene la primera sublista con el 25% de los elementos
-            rest_sublists = [item_list[i:i + min_num_items] for i in range(min_num_items, len(item_list), min_num_items)]
+            self.rest_sublists = [item_list[i:i + min_num_items] for i in range(min_num_items, len(item_list), min_num_items)]
             
             for item in first_sublist:
                 self.add_item(item)
+                
+            self.row_index+=1
+            self.show_more_button = ctk.CTkButton(self.master.master.master, text='Mostrar más', fg_color='transparent', border_color=None, command=self.show_more_filters)
+            self.show_more_button.grid(row=self.row_index, column=0, sticky='w', padx=4)
+            self.row_index+=1
 
         else:
+            self.row_index+=1
             for item in item_list:
                 self.add_item(item)
 
+    def get_actual_row(self):
+        return self.row_index
+    
     def add_item(self, item):
         checkbox = ctk.CTkCheckBox(self, text=item)
         if self.command is not None:
@@ -55,3 +65,11 @@ class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
         # Marca el checkbox correspondiente al elemento proporcionado como seleccionado
         for checkbox in self.checkbox_list:
             checkbox.select()
+
+    def show_more_filters(self):
+        for item in self.rest_sublists[0]:
+            self.add_item(item)
+        del self.rest_sublists[0]
+
+        if not self.rest_sublists:
+            self.show_more_button.destroy()
