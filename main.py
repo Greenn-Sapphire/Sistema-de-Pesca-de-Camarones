@@ -1,13 +1,15 @@
 import customtkinter as ctk
+import pandas as pd
 import configparser
+import numpy
 
-from CTkMessagebox import CTkMessagebox
+from Widgets.filterpanel import FilterPanel
 from Widgets.lateralmenu import lateralmenu
+from CTkMessagebox import CTkMessagebox
 from preprocessWindow import preprocess
 from dashboards import dashboards
 from uploadWindow import upload
 from mapWindow import maps
-from CTkTable import *
 from Archivos import *
 
 #<a href="https://www.flaticon.com/free-icons/align" title="align icons">Align icons created by Freepik - Flaticon</a>
@@ -88,7 +90,6 @@ class App(ctk.CTk):
 			else:
 				self.maps_frame.grid_forget()
 		except Exception as e:
-			#print(e)
 			pass
 
 	def read_data(self):
@@ -108,11 +109,9 @@ class App(ctk.CTk):
 	def filter_data(self):
 		if self.table_frame.winfo_viewable():
 			try:
-				self.table_frame.table.destroy()
-				df_list = self.preprocess_frame.data_filter_frame.apply_filter()
+				indexes_to_display = self.preprocess_frame.data_filter_frame.apply_filter()
 				
-				self.table_frame.table = CTkTable(self.table_frame.scrollable_table_frame, row = self.table_frame.numrow + 1, hover_color = '#778899', values = df_list, command = self.table_frame.UpdateData)
-				self.table_frame.table.grid(row = 0, column = 0)
+				self.table_frame.table.display_rows(rows = indexes_to_display, all_rows_displayed = False, redraw = True)
 				CTkMessagebox(title = 'Aviso', message = 'Datos filtrados (temporalmente)', icon = 'check')
 			except Exception as e:
 				CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}', icon = 'warning')
@@ -121,26 +120,42 @@ class App(ctk.CTk):
 		elif self.dashboard_frame.winfo_viewable():
 			df_list = self.preprocess_frame.data_filter_frame.apply_filter_graphs()
 			self.dashboard_frame.filter_dashboard_data(df_list)
+			CTkMessagebox(title = 'Aviso', message = 'Datos filtrados', icon = 'check')
 
 		elif self.maps_frame.winfo_viewable():
 			df_list = self.preprocess_frame.data_filter_frame.apply_filter_graphs()
 			self.maps_frame.filter_map_data(df_list)
+			CTkMessagebox(title = 'Aviso', message = 'Datos filtrados', icon = 'check')
 
 	def process_data(self):
-		try:
-			self.preprocess_frame.preprocess_data(self.dataframe)
-			self.dashboard_frame = dashboards(self.main_frame, self.dataframe)
-			self.lateral_menu.dashboard_menu_button.configure(command = lambda: self.select_frame_by_name('dashboards'))
-			self.lateral_menu.dashboard_menu_button.configure(state = 'normal')
+		modified_data_list = self.table_frame.table.get_sheet_data(get_header = True)
+		modified_dataframe = pd.DataFrame(modified_data_list[1:], columns = modified_data_list[0])
+		modified_dataframe = modified_dataframe.replace({'': numpy.nan, None: numpy.nan})
 
-			self.maps_frame = maps(self.main_frame, self.dataframe)
-			self.lateral_menu.maps_menu_button.configure(command = lambda: self.select_frame_by_name('maps'))
-			self.lateral_menu.maps_menu_button.configure(state = 'normal')
+		if not self.dataframe.equals(modified_dataframe):
+			self.dataframe = modified_dataframe
+			try:
+				self.preprocess_frame.preprocess_data(self.dataframe)
+			except:
+				return
+			self.preprocess_frame.data_filter_frame.destroy()
+			self.preprocess_frame.data_filter_frame = FilterPanel(self.preprocess_frame, self.dataframe, self.preprocess_frame.nonfilterlist, width = 150, corner_radius = 5)
+			self.preprocess_frame.data_filter_frame.grid(row = 0, column = 0, sticky = 'nwse', padx = 8, pady = 8)
+			self.preprocess_frame.data_filter_frame.grid_rowconfigure(8, weight = 1)
+			self.preprocess_frame.data_filter_frame.grid_columnconfigure(0, weight = 1)
+		else:
+			try:
+				self.preprocess_frame.preprocess_data(self.dataframe)
+			except:
+				return
 
-			CTkMessagebox(title = 'Aviso', message = 'Datos procesados con éxito', icon = 'check')
-		except  Exception as e:
-			print(e)
-			pass
+		self.dashboard_frame = dashboards(self.main_frame, self.dataframe)
+		self.lateral_menu.dashboard_menu_button.configure(command = lambda: self.select_frame_by_name('dashboards'))
+		self.lateral_menu.dashboard_menu_button.configure(state = 'normal')
+		self.maps_frame = maps(self.main_frame, self.dataframe)
+		self.lateral_menu.maps_menu_button.configure(command = lambda: self.select_frame_by_name('maps'))
+		self.lateral_menu.maps_menu_button.configure(state = 'normal')
+		CTkMessagebox(title = 'Aviso', message = 'Datos procesados con éxito', icon = 'check')
 
 if __name__ == '__main__':
     app = App()

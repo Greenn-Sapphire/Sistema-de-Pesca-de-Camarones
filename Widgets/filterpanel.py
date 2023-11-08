@@ -8,7 +8,6 @@ class FilterPanel(ctk.CTkScrollableFrame):
         super().__init__(master, **kwargs)
         self.dataframe = dataframe
         self.nonfilter = nofilterlist
-        self.master = master
         self.scroll_checkboxs = {}
         self.filterLabel = ctk.CTkLabel(self, text = 'Filtros', font = ctk.CTkFont(size = 15, weight = 'bold'))
         self.filterLabel.grid(row = 0, column = 0, padx = 20, pady = 20)
@@ -19,6 +18,7 @@ class FilterPanel(ctk.CTkScrollableFrame):
                 label = ctk.CTkLabel(self, text=colname, font=ctk.CTkFont(size=12, weight='bold'))
                 label.grid(row=row_index, column=0, sticky='w', padx=4)
                 row_index += 1
+                
                 if self.dataframe[colname].isnull().any():
                     item_list = sorted(self.dataframe[colname].dropna().unique().tolist())
                     item_list.insert(0, numpy.nan)
@@ -52,20 +52,15 @@ class FilterPanel(ctk.CTkScrollableFrame):
                 data['scroll_checkbox_frame'].set_checked(item)
 
     def apply_filter(self):
-        try:
-            filtered_df = self.master.scroll_checkbox_frame.config_window.getdataframe()
-        except:
-            filtered_df = self.dataframe
+        filtered_df = self.dataframe
 
         for column_name, data in self.scroll_checkboxs.items():
             items = data['scroll_checkbox_frame'].get_checked_items()
             if items:
                 filtered_df = filtered_df[filtered_df[column_name].isin(items)]
 
-        df_list = filtered_df.values.tolist()
-        column_names = filtered_df.columns.tolist()
-        df_list.insert(0, column_names)
-        return df_list
+        indexes_to_display = filtered_df.index.tolist()
+        return indexes_to_display
         
     def apply_filter_graphs(self):
         filtered_df = self.dataframe

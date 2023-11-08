@@ -117,17 +117,14 @@ class dashboards(ctk.CTkFrame):
 		# Crear los datos y generar la gráfica usando Seaborn
 		fig, axs = plt.subplots(4, figsize=(9, 16), facecolor='none')
 
-		axs[0].pie(df['DIA/NOCHE'].value_counts(), autopct='%1.1f%%', colors=['skyblue', 'lightcoral'])
+		axs[0].pie(df['DIA/NOCHE'].value_counts(), labels=df['DIA/NOCHE'].value_counts().index, autopct='%1.1f%%', colors=['skyblue', 'lightcoral'])
 		axs[0].set_title('Porcentaje de lances de día y de noche', fontsize = 10)
 		labels = df['DIA/NOCHE'].unique()
-		axs[0].legend(labels, loc = 'upper right')
 
 		etiquetas_personalizadas = {1: 'Hembra', 2: 'Macho', 3: 'Indeterminado'}
-		df['SEXO'] = df['SEXO'].map(etiquetas_personalizadas)
-		axs[1].pie(df['SEXO'].value_counts(), autopct='%1.1f%%', colors=['skyblue', 'lightcoral', 'blueviolet'])
+		etiquetas = df['SEXO'].map(etiquetas_personalizadas)
+		axs[1].pie(etiquetas.value_counts(), labels=etiquetas.value_counts().index, autopct='%1.1f%%', colors=['skyblue', 'lightcoral', 'blueviolet'])
 		axs[1].set_title('Porcentaje de sexos', fontsize = 10)
-		labels = df['SEXO'].unique()
-		axs[1].legend(labels, loc = 'upper right')
 		
 		sns.boxplot(x='LONG_TOT', data=df, ax = axs[2])
 		axs[2].set_title('Distribución de longitud de especies en milimetros', fontsize = 10)
