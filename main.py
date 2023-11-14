@@ -12,18 +12,13 @@ from uploadWindow import upload
 from mapWindow import maps
 from Archivos import *
 
-#<a href="https://www.flaticon.com/free-icons/align" title="align icons">Align icons created by Freepik - Flaticon</a>
-#<a href="https://www.flaticon.com/free-icons/seo-full" title="seo full icons">Seo full icons created by Freepik - Flaticon</a>
-#<a href="https://www.flaticon.com/free-icons/up-arrow" title="up arrow icons">Up arrow icons created by Freepik - Flaticon</a>
-#<a href="https://www.flaticon.com/free-icons/spot" title="spot icons">Spot icons created by Freepik - Flaticon</a>
-#<a href="https://www.flaticon.com/free-icons/write" title="write icons">Write icons created by Freepik - Flaticon</a>
 class App(ctk.CTk):
 	def __init__(self):
 		super().__init__()
-		settings = self.read_config_file()
-		ctk.set_appearance_mode(settings['SETTINGS']['theme'])
+		ctk.set_appearance_mode('System')
 		self.title('Sistema de Pesca de Camarones')
-		self.iconbitmap('Archivos/shrimp.ico')
+		#self.iconbitmap('_internal/Archivos/shrimp.ico') # Para correr en .EXE
+		self.iconbitmap('Archivos/shrimp.ico') # Para correr en VS
 		width, height = self.winfo_screenwidth(), self.winfo_screenheight()
 		self.geometry('%dx%d+0+0' % (width, height))
 		self.grid_columnconfigure(1, weight=1)
@@ -46,11 +41,6 @@ class App(ctk.CTk):
 		#Llamada a la ventana upload
 		self.select_frame_by_name('upload')
 
-	def read_config_file(self):
-		settings = configparser.ConfigParser()
-		settings.read('config.ini')
-		return settings
-	
 	#Funcion para cambiar entre frames principales
 	def select_frame_by_name(self, name):
 		try:

@@ -34,8 +34,6 @@ class ToplevelWindow(ctk.CTkToplevel):
     def apply_config(self):
         try:
             items = self.checkbox.item_list.tolist()
-            self.checks = self.checkbox.get_unchecked_items()
-            headers_to_hide_index = [items.index(item) for item in self.checks]
             self.checks = self.checkbox.get_checked_items()
             headers_to_show_index = [items.index(item) for item in self.checks]
             self.master.checks = self.checks
@@ -49,8 +47,6 @@ class ToplevelWindow(ctk.CTkToplevel):
             column_names = self.dataframe.columns.tolist()
             df_list.insert(0, column_names)
 
-            self.master.table.hide_columns(columns = headers_to_hide_index, redraw = True, deselect_all = True)
-            self.master.table.display_columns(columns = headers_to_show_index, redraw = True, deselect_all = True)
-            self.master.table.set_all_column_widths(width = None, only_set_if_too_small = False, redraw = True)
+            self.master.table.display_columns(columns = headers_to_show_index, all_columns_displayed = False, redraw = True)
         except Exception as e:
             print(e)

@@ -1,13 +1,10 @@
 import customtkinter as ctk
-import pandas as pd
 import openpyxl
 import os
 
-from Widgets.scrollablecheckboxWidget import ScrollableCheckBoxFrame
 from tkinter.filedialog import asksaveasfilename
 from Widgets.configWindow import ToplevelWindow
 from CTkMessagebox import CTkMessagebox
-from datetime import datetime
 from tksheet import Sheet
 from Archivos import *
 from PIL import Image

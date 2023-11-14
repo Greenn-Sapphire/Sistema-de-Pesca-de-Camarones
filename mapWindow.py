@@ -71,8 +71,8 @@ class maps(ctk.CTkFrame):
 			self.create_markers(coordinates_df)
 
 		except Exception as e:
-			CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}', icon = 'warning')
-			return
+			CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}\nRevisa los datos filtrados.', icon = 'warning')
+			raise
 
 def on_click_fin(marker):
 	if marker.text is None or marker.text == '':

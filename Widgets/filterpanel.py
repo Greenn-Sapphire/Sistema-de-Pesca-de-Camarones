@@ -33,22 +33,18 @@ class FilterPanel(ctk.CTkScrollableFrame):
                 self.scroll_checkboxs[colname] = {'colname': colname, 'scroll_checkbox_frame': scroll_checkbox_frame}
 
     def updateScrollBox(self):
-        filtered_df = self.dataframe.copy()
+        filtered_df = self.dataframe
 
         for column_name, data in self.scroll_checkboxs.items():
             items = data['scroll_checkbox_frame'].get_checked_items()
             if items:
                 filtered_df = filtered_df[filtered_df[column_name].isin(items)]
 
-        for column_name, data in self.scroll_checkboxs.items():
             unique_items = filtered_df[column_name].unique().tolist()
-            current_items = data['scroll_checkbox_frame'].get_checked_items()
-
-            #unique_items = sorted(unique_items)
 
             data['scroll_checkbox_frame'].update_items(unique_items)
 
-            for item in current_items:
+            for item in items:
                 data['scroll_checkbox_frame'].set_checked(item)
 
     def apply_filter(self):
