@@ -45,7 +45,7 @@ class TableWidget(ctk.CTkFrame):
 
     def save_table(self):
         try:
-            file_path = asksaveasfilename(initialdir = 'C://', defaultextension='.xlsx', filetypes = [('Excel', '*.xlsx'), ('CSV', '*.csv')])
+            file_path = asksaveasfilename(initialdir = 'C://', defaultextension='.xlsx', filetypes = [('Excel', '*.xlsx')])
             if file_path:
                 workbook = openpyxl.Workbook()
                 sheet = workbook.active

@@ -47,28 +47,28 @@ class preprocess(ctk.CTkFrame):
 				df[column] = df[column].astype(int)
 
 			except ValueError as e:
-				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\nUno de los valores esta vacio o no coincide con el tipo de dato: Número entero', icon = 'cancel')
+				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\nUno de los valores está vacío o no coincide con el tipo de dato: Número entero.', icon = 'cancel')
 				raise
 			except Exception as e:
-				CTkMessagebox(title = 'Error', message = f'Se ha producido un error inesperado: {e}', icon = 'cancel')
+				CTkMessagebox(title = 'Error', message = f'La columna "{column}" no se encuentra dentro del archivo.', icon = 'cancel')
 				raise
 		
 		for column in columns_to_float:
 			try:
 				df[column] = df[column].astype(float)
 			except ValueError as e:
-				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\nUno de los valores esta vacio o no coincide con el tipo de dato: Número entero con decimales', icon = 'cancel')
+				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\nUno de los valores está vacío o no coincide con el tipo de dato: Número con decimales.', icon = 'cancel')
 				raise
 			except Exception as e:
-				CTkMessagebox(title = 'Error', message = f'Se ha producido un error inesperado: {e}', icon = 'cancel')
+				CTkMessagebox(title = 'Error', message = f'La columna "{column}" no se encuentra dentro del archivo.', icon = 'cancel')
 				raise
 		
 		for column in columns_to_str:
 			try:
 				df[column] = df[column].astype(str)
 			except ValueError as e:
-				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\nUno de los valores esta vacio o no coincide con el tipo de dato: Texto', icon = 'cancel')
+				CTkMessagebox(title = 'Error', message = f'Error en la columna "{column}":\n\nUno de los valores está vacío o no coincide con el tipo de dato: Texto.', icon = 'cancel')
 				raise
 			except Exception as e:
-				CTkMessagebox(title = 'Error', message = f'Se ha producido un error inesperado: {e}', icon = 'cancel')
+				CTkMessagebox(title = 'Error', message = f'La columna "{column}" no se encuentra dentro del archivo.', icon = 'cancel')
 				raise

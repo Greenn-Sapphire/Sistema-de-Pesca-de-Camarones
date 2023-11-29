@@ -16,7 +16,7 @@ class App(ctk.CTk):
 	def __init__(self):
 		super().__init__()
 		ctk.set_appearance_mode('System')
-		self.title('Sistema de Pesca de Camarones')
+		self.title('Sistema de consultas y visualización de datos de pesca')
 		#self.iconbitmap('_internal/Archivos/shrimp.ico') # Para correr en .EXE
 		self.iconbitmap('Archivos/shrimp.ico') # Para correr en VS
 		width, height = self.winfo_screenwidth(), self.winfo_screenheight()
@@ -102,7 +102,7 @@ class App(ctk.CTk):
 				indexes_to_display = self.preprocess_frame.data_filter_frame.apply_filter()
 				
 				self.table_frame.table.display_rows(rows = indexes_to_display, all_rows_displayed = False, redraw = True)
-				CTkMessagebox(title = 'Aviso', message = 'Datos filtrados (temporalmente)', icon = 'check')
+				CTkMessagebox(title = 'Aviso', message = 'Filtros aplicados a la tabla.', icon = 'check')
 			except Exception as e:
 				CTkMessagebox(title = 'Error', message = f'Error inesperado: {str(e)}', icon = 'warning')
 				return
@@ -110,12 +110,12 @@ class App(ctk.CTk):
 		elif self.dashboard_frame.winfo_viewable():
 			df_list = self.preprocess_frame.data_filter_frame.apply_filter_graphs()
 			self.dashboard_frame.filter_dashboard_data(df_list)
-			CTkMessagebox(title = 'Aviso', message = 'Datos filtrados', icon = 'check')
+			CTkMessagebox(title = 'Aviso', message = 'Filtros aplicados a los dashboards.', icon = 'check')
 
 		elif self.maps_frame.winfo_viewable():
 			df_list = self.preprocess_frame.data_filter_frame.apply_filter_graphs()
 			self.maps_frame.filter_map_data(df_list)
-			CTkMessagebox(title = 'Aviso', message = 'Datos filtrados', icon = 'check')
+			CTkMessagebox(title = 'Aviso', message = 'Filtros aplicados al mapa.', icon = 'check')
 
 	def process_data(self):
 		modified_data_list = self.table_frame.table.get_sheet_data(get_header = True)
@@ -145,7 +145,7 @@ class App(ctk.CTk):
 		self.maps_frame = maps(self.main_frame, self.dataframe)
 		self.lateral_menu.maps_menu_button.configure(command = lambda: self.select_frame_by_name('maps'))
 		self.lateral_menu.maps_menu_button.configure(state = 'normal')
-		CTkMessagebox(title = 'Aviso', message = 'Datos procesados con éxito', icon = 'check')
+		CTkMessagebox(title = 'Aviso', message = 'Datos procesados con éxito.', icon = 'check')
 
 if __name__ == '__main__':
     app = App()

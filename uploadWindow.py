@@ -24,8 +24,14 @@ class upload(ctk.CTkFrame):
 	def readData(self):
 		dataframe = pd.DataFrame({})
 		try:
-			file = askopenfilename(initialdir = 'C://', filetypes = [('Excel', '*.xlsx *.xls'), ('CSV', '*.csv')])
+			file = askopenfilename(initialdir = 'C://', filetypes = [('Excel', '*.xlsx *.xls')])
 			if file:
+				try:
+					self.master.master.lateral_menu.preprocess_menu_button.configure(state = 'disabled')
+					self.master.master.lateral_menu.dashboard_menu_button.configure(state = 'disabled')
+					self.master.master.lateral_menu.maps_menu_button.configure(state = 'disabled')
+				except:
+					pass
 				path, extension = os.path.splitext(file)
 				match extension:
 					case '.csv':
@@ -43,9 +49,13 @@ class upload(ctk.CTkFrame):
 				# Aplicar la función a los nombres de las columnas
 				dataframe.columns = [remove_accents(col) for col in dataframe.columns]
 
-				dataframe['FECHA'] = pd.to_datetime(dataframe['FECHA'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')  # Convertir a tipo datetime
-				dataframe['Hr_INI'] = pd.to_datetime(dataframe['Hr_INI'], format='%H:%M:%S').dt.time  # Convertir a tipo time
-				dataframe['Hr_FIN'] = pd.to_datetime(dataframe['Hr_FIN'], format='%H:%M:%S').dt.time  # Convertir a tipo time
+				try:
+					dataframe['FECHA'] = pd.to_datetime(dataframe['FECHA'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')  # Convertir a tipo datetime
+					dataframe['Hr_INI'] = pd.to_datetime(dataframe['Hr_INI'], format='%H:%M:%S').dt.time  # Convertir a tipo time
+					dataframe['Hr_FIN'] = pd.to_datetime(dataframe['Hr_FIN'], format='%H:%M:%S').dt.time  # Convertir a tipo time
+				except:
+					CTkMessagebox(title = 'Aviso', message = 'El archivo no cuenta con una de las siguientes columnas: "FECHA", "Hr_INI" o "Hr_FIN"', icon = 'warning')
+					pass
 
 				CTkMessagebox(title = 'Aviso', message = 'Archivo cargado con éxito', icon = 'check')
 				return dataframe

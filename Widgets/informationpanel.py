@@ -12,7 +12,7 @@ class InformationPanel(ctk.CTkScrollableFrame):
         self.Label_Regis.grid(row = 3, column = 0, sticky = 'ew', pady = (1, 0))
         self.Label_Repeat = ctk.CTkLabel(self, text = 'Registros repetidos', font = ctk.CTkFont(size = 12, weight = 'bold'))
         self.Label_Repeat.grid(row = 5, column = 0, sticky = 'ew', pady = (1, 0))
-        self.Label_Empty = ctk.CTkLabel(self, text = 'Registros vacios', font = ctk.CTkFont(size = 12, weight = 'bold'))
+        self.Label_Empty = ctk.CTkLabel(self, text = 'Registros vacíos', font = ctk.CTkFont(size = 12, weight = 'bold'))
         self.Label_Empty.grid(row = 7, column = 0, sticky = 'ew', pady = (1, 0))
         self.Label_Type = ctk.CTkLabel(self, text = 'Tipo de dato', font = ctk.CTkFont(size = 12, weight = 'bold'))
         self.Label_Type.grid(row = 9, column = 0, sticky = 'ew', pady = (2, 0))
