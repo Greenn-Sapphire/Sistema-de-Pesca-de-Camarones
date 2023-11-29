@@ -31,8 +31,9 @@ class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
 
     def update_items(self, new_item_list):
         # Primero, eliminamos todos los checkboxes existentes
+        new_item_list = [str(elemento).strip().lower() for elemento in new_item_list]
         for checkbox in self.checkbox_list:
-            if checkbox.cget('text') not in new_item_list:
+            if str(checkbox.cget('text')).strip().lower() not in new_item_list:
                 checkbox.grid_forget()
             else:
                 checkbox.grid(pady=(0, 10), sticky='w')

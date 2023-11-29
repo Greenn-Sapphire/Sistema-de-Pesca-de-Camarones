@@ -1,5 +1,5 @@
-# Sistema de visualización enfocado a la pesca de camarones
-Proyecto terminal de la Universidad del Caribe enfocado al análisis descriptivo de la pesca de camarones rojos y camarones roca.
+# Sistema de consultas y visualización de datos de datos de pesca
+Proyecto terminal de la Universidad del Caribe desarrollado en el año 2023 enfocado a la generación de consultas y visualizaciones enfocados a datos sobre la pesca de camarones rojos y camarones roca.
 
 Integrantes del proyecto:
 * **190300379** - Bryan Julian Duran Cortes
@@ -10,13 +10,15 @@ Asesores del proyecto:
 * Dr. Hector Fernando Gómez Garcia
 * Dr. Juan Barcenas Graniel
 
-## Librerias y paquetes
+## Librerias y paquetes empleados durante el desarrollo
 * CustomTkinter<br> pip install customtkinter
 https://github.com/TomSchimansky/CustomTkinter
 * CTkMessagebox<br> pip install CTkMessagebox
 https://github.com/Akascape/CTkMessagebox
 * tkintermapview<br> pip install tkintermapview
+https://github.com/TomSchimansky/TkinterMapView
 * tksheet<br> pip install tksheet
+https://github.com/ragardner/tksheet
 * pillow<br> pip install pillow
 * matplotlib<br> pip install matplotlib
 * seaborn<br> pip install seaborn

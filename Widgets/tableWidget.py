@@ -18,10 +18,10 @@ class TableWidget(ctk.CTkFrame):
         self.grid_rowconfigure(1, weight=1)
         
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'Archivos')
-        config_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'light_settings.png')),
-                                                    dark_image=Image.open(os.path.join(image_path, 'dark_settings.png')), size=(20, 20))
-        save_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'light_save.png')),
-                                                    dark_image=Image.open(os.path.join(image_path, 'dark_save.png')), size=(20, 20))
+        config_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_settings.png')),
+                                                    dark_image=Image.open(os.path.join(image_path, 'light_settings.png')), size=(20, 20))
+        save_image = ctk.CTkImage(light_image=Image.open(os.path.join(image_path, 'dark_save.png')),
+                                                    dark_image=Image.open(os.path.join(image_path, 'light_save.png')), size=(20, 20))
 
         self.table_save_button = ctk.CTkButton(self, text = 'Guardar tabla', image=save_image, width = 20, height = 20, command = self.save_table)
         self.table_save_button.grid(row = 0, column = 0, sticky = 'e', padx = (0, 185), pady = (8, 0))
